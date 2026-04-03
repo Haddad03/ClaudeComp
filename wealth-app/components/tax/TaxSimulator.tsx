@@ -165,7 +165,7 @@ export function TaxSimulator() {
                   <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 12 }} />
                   <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fill: "#64748b", fontSize: 11 }} />
                   <Tooltip
-                    formatter={(v: number) => fmt(v)}
+                    formatter={(v) => fmt(Number(v))}
                     contentStyle={{ backgroundColor: "#1a1d27", border: "1px solid #2d3148", borderRadius: "8px", color: "#e2e8f0" }}
                   />
                   <Legend wrapperStyle={{ fontSize: "12px", color: "#94a3b8" }} />

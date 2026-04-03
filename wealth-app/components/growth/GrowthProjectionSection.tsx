@@ -127,8 +127,8 @@ export function GrowthProjectionSection() {
                   <XAxis dataKey="year" tickFormatter={(v) => `Yr ${v}`} tick={{ fill: "#64748b", fontSize: 11 }} />
                   <YAxis tickFormatter={formatCAD} tick={{ fill: "#64748b", fontSize: 11 }} width={60} />
                   <Tooltip
-                    formatter={(value: number, name: string) => [
-                      formatCAD(value),
+                    formatter={(value, name) => [
+                      formatCAD(Number(value)),
                       name === "withSavings" ? "With investing" : name === "contributionsOnly" ? "Contributions only" : "No saving",
                     ]}
                     contentStyle={{ backgroundColor: "#1a1d27", border: "1px solid #2d3148", borderRadius: "8px", color: "#e2e8f0" }}
