@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     return Response.json(allCategorized)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    console.error("Categorize error:", msg)
-    return new Response(msg, { status: 500 })
+    console.error("Categorize error:", msg) // no transaction content logged
+    return new Response("Categorization failed", { status: 500 })
   }
 }

@@ -36,6 +36,8 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: "wealth-app-store",
+      // Never persist sensitive financial data to localStorage
+      partialize: (state) => ({ activeTab: state.activeTab }),
     }
   )
 )

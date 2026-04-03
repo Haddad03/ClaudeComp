@@ -51,7 +51,7 @@ Use positive numbers for all amounts. No markdown, no explanation.`,
     return Response.json(transactions)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    console.error("PDF parse error:", msg)
-    return new Response(msg, { status: 500 })
+    console.error("PDF parse error:", msg) // no file content logged
+    return new Response("Failed to parse PDF.", { status: 500 })
   }
 }
