@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WealthWise
 
-## Getting Started
+AI-powered financial tools for Canadians who don't have $1 million — yet.
 
-First, run the development server:
+Built at the **Claude Builders Hackathon @ McGill** (April 4, 2026).
+
+---
+
+## What it does
+
+WealthWise helps young Canadians understand and manage their money through six tools:
+
+| Feature | Description |
+|---------|-------------|
+| **Statement Upload** | Upload a bank/credit card CSV → Claude AI categorizes every transaction |
+| **AI Spending Suggestions** | Claude analyzes your spending and recommends where to cut and what to do with saved money |
+| **Growth Projection** | Interactive chart showing compound interest growth over time with adjustable sliders |
+| **Accounts Explainer** | Plain-English breakdowns of TFSA, RRSP, and FHSA with mini growth charts |
+| **Tax Simulator** | Estimate your Canadian taxes (all 13 provinces/territories) and see RRSP savings |
+| **Terms & Disclaimer** | Full legal disclaimer — we are not financial advisors |
+
+> **Not financial advice.** AI can make mistakes. Always consult a qualified financial professional.
+
+---
+
+## Tech stack
+
+- **Framework:** Next.js 16 (App Router, TypeScript)
+- **Styling:** Tailwind CSS v4 + shadcn/ui (dark theme)
+- **Charts:** Recharts
+- **AI:** Anthropic SDK (`claude-sonnet-4-6`)
+- **State:** Zustand (persisted to localStorage)
+- **CSV parsing:** PapaParse
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18+
+- An [Anthropic API key](https://console.anthropic.com/)
+
+### Setup
 
 ```bash
+# Clone and install
+git clone <repo-url>
+cd wealth-app
+npm install
+
+# Add your API key
+echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local
+
+# Run locally
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+### Deploy to Vercel
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx vercel --prod
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set `ANTHROPIC_API_KEY` in your Vercel project environment variables.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Project structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+wealth-app/
+├── app/
+│   ├── layout.tsx              # Root layout, dark theme
+│   ├── page.tsx                # Main app — tab router
+│   └── api/
+│       ├── categorize/         # POST: Claude categorizes transactions
+│       └── suggestions/        # POST: Claude generates spending advice
+├── components/
+│   ├── layout/                 # Navbar, DisclaimerBanner, TermsPage
+│   ├── dashboard/              # DashboardShell, OverviewCards, CategoryPieChart
+│   ├── upload/                 # UploadSection, TransactionTable, CategoryBadge
+│   ├── suggestions/            # AISuggestionsPanel, SuggestionCard
+│   ├── growth/                 # GrowthProjectionSection
+│   ├── accounts/               # AccountsExplainer (TFSA/RRSP/FHSA)
+│   └── tax/                    # TaxSimulator
+├── lib/
+│   ├── claude.ts               # Anthropic client (server-only)
+│   ├── parseStatement.ts       # CSV parser + mock data generator
+│   ├── taxCalculator.ts        # Canadian tax brackets + CPP/EI
+│   ├── growthProjection.ts     # Compound interest formula
+│   ├── categories.ts           # Category colors, icons, labels
+│   └── types.ts                # Shared TypeScript interfaces
+└── store/
+    └── appStore.ts             # Zustand global store
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## CSV format support
+
+The CSV parser auto-detects column names. Supported formats include exports from:
+- TD Bank
+- RBC
+- BMO
+- Scotiabank
+- CIBC
+- Any CSV with `Date`, `Description`, and `Amount` (or `Debit`/`Credit`) columns
+
+No upload? Hit **"Try with demo data"** for 20 realistic Canadian transactions.
+
+---
+
+## Hackathon team
+
+Built in 8 hours at the Claude Builders Hackathon @ McGill, April 4, 2026.
+
+Track: **Economic Empowerment & Education**
+
+Powered by [Claude AI](https://anthropic.com) (Anthropic).
