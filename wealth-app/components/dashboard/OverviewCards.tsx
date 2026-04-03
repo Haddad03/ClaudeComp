@@ -3,10 +3,10 @@
 import { useAppStore } from "@/store/appStore"
 import { Card, CardContent } from "@/components/ui/card"
 import { CATEGORY_COLORS } from "@/lib/categories"
-import type { CategorySummary } from "@/lib/types"
+import type { CategorizedTransaction, CategorySummary } from "@/lib/types"
 
 function buildSummaries(
-  transactions: ReturnType<typeof useAppStore>["transactions"]
+  transactions: CategorizedTransaction[]
 ): CategorySummary[] {
   const totals: Record<string, { total: number; count: number }> = {}
   let grandTotal = 0

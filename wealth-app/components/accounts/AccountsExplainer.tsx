@@ -194,7 +194,7 @@ export function AccountsExplainer() {
                       <XAxis dataKey="year" tickFormatter={(v) => `Yr ${v}`} tick={{ fill: "#64748b", fontSize: 10 }} />
                       <YAxis tickFormatter={formatCAD} tick={{ fill: "#64748b", fontSize: 10 }} width={55} />
                       <Tooltip
-                        formatter={(v: number) => formatCAD(v)}
+                        formatter={(v) => [formatCAD(Number(v)), ""]}
                         contentStyle={{ backgroundColor: "#1a1d27", border: "1px solid #2d3148", borderRadius: "8px", color: "#e2e8f0", fontSize: "12px" }}
                       />
                       <Legend wrapperStyle={{ fontSize: "11px", color: "#94a3b8" }} />
