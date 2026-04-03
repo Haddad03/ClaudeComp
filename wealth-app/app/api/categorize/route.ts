@@ -8,7 +8,7 @@ const VALID_CATEGORIES: TransactionCategory[] = [
   "Streaming & Media", "Software & Apps", "Gym & Fitness",
   "Clothing & Apparel", "Electronics", "Home & Garden", "Personal Care & Beauty",
   "Pharmacy & Medicine", "Doctor & Dental", "Education", "Pet Care", "Charity & Donations",
-  "ATM & Banking", "Transfers", "Investments", "Other",
+  "ATM & Banking", "Transfers", "Investments", "Card Payment", "Other",
 ]
 
 const VALID_SET = new Set(VALID_CATEGORIES.map((c) => c.toLowerCase()))
@@ -31,7 +31,8 @@ const SYSTEM_PROMPT = `You are a transaction categorizer. Use ONLY these exact c
 "Streaming & Media", "Software & Apps", "Gym & Fitness",
 "Clothing & Apparel", "Electronics", "Home & Garden", "Personal Care & Beauty",
 "Pharmacy & Medicine", "Doctor & Dental", "Education", "Pet Care", "Charity & Donations",
-"ATM & Banking", "Transfers", "Investments", "Other".
+"ATM & Banking", "Transfers", "Investments", "Card Payment", "Other".
+IMPORTANT: Use "Card Payment" for any credit card bill payments, card balance payments, or loan repayments — these are NOT expenses.
 Return ONLY a JSON array: [{"id":"...","category":"Groceries","confidence":0.95},...]`
 
 export async function POST(request: Request) {

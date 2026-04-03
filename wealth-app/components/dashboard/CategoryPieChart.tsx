@@ -16,8 +16,10 @@ import type { TransactionCategory } from "@/lib/types"
 export function CategoryPieChart() {
   const { transactions } = useAppStore()
 
+  const EXCLUDED = new Set(["Card Payment", "Transfers", "Investments"])
   const totals: Record<string, number> = {}
   for (const tx of transactions) {
+    if (EXCLUDED.has(tx.category)) continue
     totals[tx.category] = (totals[tx.category] ?? 0) + tx.amount
   }
 
