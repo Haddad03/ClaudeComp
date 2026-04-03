@@ -30,6 +30,7 @@ export const CATEGORIES: TransactionCategory[] = [
   "ATM & Banking",
   "Transfers",
   "Investments",
+  "Card Payment",
   "Other",
 ]
 
@@ -63,6 +64,7 @@ export const CATEGORY_COLORS: Record<TransactionCategory, string> = {
   "ATM & Banking": "#a3e635",
   "Transfers": "#cbd5e1",
   "Investments": "#38bdf8",
+  "Card Payment": "#475569",
   "Other": "#64748b",
 }
 
@@ -96,6 +98,7 @@ export const CATEGORY_BG: Record<TransactionCategory, string> = {
   "ATM & Banking": "bg-lime-400/20 text-lime-400",
   "Transfers": "bg-slate-400/20 text-slate-300",
   "Investments": "bg-sky-400/20 text-sky-400",
+  "Card Payment": "bg-slate-600/20 text-slate-400",
   "Other": "bg-slate-500/20 text-slate-400",
 }
 
@@ -129,5 +132,6 @@ export const CATEGORY_EMOJIS: Record<TransactionCategory, string> = {
   "ATM & Banking": "🏧",
   "Transfers": "💸",
   "Investments": "📈",
+  "Card Payment": "💳",
   "Other": "📦",
 }

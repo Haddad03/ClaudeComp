@@ -36,6 +36,7 @@ export type TransactionCategory =
   | "ATM & Banking"
   | "Transfers"
   | "Investments"
+  | "Card Payment"
   | "Other"
 
 export interface CategorizedTransaction extends RawTransaction {

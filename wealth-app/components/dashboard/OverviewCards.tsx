@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { CATEGORY_COLORS } from "@/lib/categories"
 import type { CategorizedTransaction, CategorySummary } from "@/lib/types"
 
+const EXCLUDED_FROM_SPENDING = new Set(["Card Payment", "Transfers", "Investments"])
+
 function buildSummaries(
   transactions: CategorizedTransaction[]
 ): CategorySummary[] {
@@ -15,7 +17,7 @@ function buildSummaries(
     if (!totals[tx.category]) totals[tx.category] = { total: 0, count: 0 }
     totals[tx.category].total += tx.amount
     totals[tx.category].count += 1
-    grandTotal += tx.amount
+    if (!EXCLUDED_FROM_SPENDING.has(tx.category)) grandTotal += tx.amount
   }
 
   return Object.entries(totals).map(([category, { total, count }]) => ({
@@ -29,7 +31,9 @@ function buildSummaries(
 export function OverviewCards() {
   const { transactions } = useAppStore()
   const summaries = buildSummaries(transactions)
-  const grandTotal = transactions.reduce((s, t) => s + t.amount, 0)
+  const grandTotal = transactions
+    .filter((t) => !EXCLUDED_FROM_SPENDING.has(t.category))
+    .reduce((s, t) => s + t.amount, 0)
   const topCategory = summaries.sort((a, b) => b.total - a.total)[0]
   const avgPerTx = transactions.length ? grandTotal / transactions.length : 0
 
