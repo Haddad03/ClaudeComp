@@ -39,8 +39,30 @@ export function UploadSection() {
   }
 
   async function handleFile(file: File) {
+    if (file.name.endsWith(".pdf")) {
+      setLoading(true)
+      setError(null)
+      try {
+        const formData = new FormData()
+        formData.append("file", file)
+        const res = await fetch("/api/parse-pdf", { method: "POST", body: formData })
+        if (!res.ok) throw new Error(await res.text())
+        const raw: RawTransaction[] = await res.json()
+        if (!raw.length) {
+          setError("No transactions found in the PDF.")
+          return
+        }
+        await processTransactions(raw)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Failed to parse PDF.")
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
+
     if (!file.name.endsWith(".csv")) {
-      setError("Please upload a CSV file. PDF support coming soon.")
+      setError("Please upload a CSV or PDF file.")
       return
     }
     try {
@@ -104,13 +126,13 @@ export function UploadSection() {
                 Drop your CSV here, or click to browse
               </p>
               <p className="mt-1 text-sm text-slate-400">
-                Supports TD, RBC, BMO, Scotiabank, CIBC exports
+                Supports CSV and PDF bank statements
               </p>
             </div>
             <input
               ref={inputRef}
               type="file"
-              accept=".csv"
+              accept=".csv,.pdf"
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0]
