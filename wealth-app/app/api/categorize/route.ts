@@ -1,8 +1,15 @@
 import { anthropic } from "@/lib/claude"
 import type { RawTransaction, CategorizedTransaction } from "@/lib/types"
 
-const SYSTEM_PROMPT = `Categorize transactions. Categories: Food, Rent, Subscriptions, Transportation, Entertainment, Other.
-Return ONLY JSON array: [{"id":"...","category":"Food","confidence":0.95},...]`
+const SYSTEM_PROMPT = `Categorize transactions into exactly one of these 30 categories:
+Groceries, Restaurants & Dining, Coffee & Cafes, Fast Food, Alcohol & Bars,
+Rent & Mortgage, Utilities, Internet & Phone, Insurance,
+Gas & Fuel, Public Transit, Ride Share, Travel & Flights, Hotels & Accommodation,
+Streaming & Media, Software & Apps, Gym & Fitness,
+Clothing & Apparel, Electronics, Home & Garden, Personal Care & Beauty,
+Pharmacy & Medicine, Doctor & Dental, Education, Pet Care, Charity & Donations,
+ATM & Banking, Transfers, Investments, Other.
+Return ONLY JSON array: [{"id":"...","category":"Groceries","confidence":0.95},...]`
 
 export async function POST(request: Request) {
   try {
