@@ -1,17 +1,8 @@
 import { anthropic } from "@/lib/claude"
 import type { RawTransaction, CategorizedTransaction } from "@/lib/types"
 
-const SYSTEM_PROMPT = `You are a financial transaction categorizer for a Canadian budgeting app.
-Categorize each transaction into EXACTLY one of these categories:
-- Food (groceries, restaurants, coffee shops, food delivery like DoorDash/UberEats/SkipTheDishes)
-- Rent (rent payments, utilities, electricity, internet, phone bills)
-- Subscriptions (Netflix, Spotify, Amazon Prime, software, gym memberships, streaming services)
-- Transportation (gas stations, Uber/Lyft/taxi, public transit, parking, car insurance)
-- Entertainment (movies, concerts, bars, games, sports, hobbies)
-- Other (everything else: clothing, medical, ATM, transfers, unknown)
-
-Return ONLY a valid JSON array. No explanation. No markdown fences. No extra text.
-Format: [{"id":"...","category":"Food","confidence":0.95},...]`
+const SYSTEM_PROMPT = `Categorize transactions. Categories: Food, Rent, Subscriptions, Transportation, Entertainment, Other.
+Return ONLY JSON array: [{"id":"...","category":"Food","confidence":0.95},...]`
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +22,7 @@ export async function POST(request: Request) {
 
       const message = await anthropic.messages.create({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
+        max_tokens: 1024,
         system: SYSTEM_PROMPT,
         messages: [
           {
