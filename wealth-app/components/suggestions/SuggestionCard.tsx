@@ -18,16 +18,18 @@ const REDIRECT_COLORS: Record<string, string> = {
 
 export function SuggestionCard({ suggestion }: { suggestion: AISuggestion }) {
   return (
-    <div className="rounded-lg border border-[--border] bg-[--secondary] p-4 transition-colors hover:border-violet-500/40">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <TrendingDown className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-          <p className="font-medium text-white">{suggestion.title}</p>
+    <div className="rounded-lg border border-slate-700/50 bg-gradient-to-br from-slate-800/40 to-slate-900/40 p-5 transition-all duration-300 hover:border-violet-500/50 hover:shadow-lg hover:shadow-violet-500/10 hover:from-slate-800/60">
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-slate-700/50">
+            <TrendingDown className="h-4 w-4 text-slate-300" />
+          </div>
+          <p className="font-semibold text-white text-base">{suggestion.title}</p>
         </div>
         <Badge
           variant="outline"
           className={cn(
-            "shrink-0 text-xs",
+            "shrink-0 text-xs font-semibold border",
             PRIORITY_STYLES[suggestion.priority]
           )}
         >
@@ -35,18 +37,22 @@ export function SuggestionCard({ suggestion }: { suggestion: AISuggestion }) {
         </Badge>
       </div>
 
-      <p className="mt-2 text-sm text-slate-400">{suggestion.detail}</p>
+      <p className="text-sm text-slate-300 leading-relaxed">{suggestion.detail}</p>
 
       {suggestion.monthlySavings > 0 && (
-        <div className="mt-3 flex items-center gap-2 text-sm">
-          <PiggyBank className="h-4 w-4 text-emerald-400" />
-          <span className="text-emerald-400 font-medium">
-            Save ~${suggestion.monthlySavings}/month
-          </span>
-          <ArrowRight className="h-3 w-3 text-slate-500" />
-          <span className={cn("font-medium", REDIRECT_COLORS[suggestion.redirectTo])}>
-            → {suggestion.redirectTo}
-          </span>
+        <div className="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <PiggyBank className="h-4 w-4 text-emerald-400" />
+            <span className="text-sm font-semibold">
+              <span className="text-emerald-400">Save ~${suggestion.monthlySavings}</span>/month
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ArrowRight className="h-3.5 w-3.5 text-slate-500" />
+            <span className={cn("font-semibold text-sm", REDIRECT_COLORS[suggestion.redirectTo])}>
+              {suggestion.redirectTo}
+            </span>
+          </div>
         </div>
       )}
     </div>

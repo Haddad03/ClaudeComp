@@ -13,11 +13,15 @@ interface AppStore {
   suggestions: AISuggestion[]
   taxResult: TaxResult | null
   activeTab: string
+  hasOnboarded: boolean
+  userGoal: string | null
   setTransactions: (t: CategorizedTransaction[]) => void
   setSuggestions: (s: AISuggestion[]) => void
   setTaxResult: (r: TaxResult) => void
   setActiveTab: (tab: string) => void
   clearTransactions: () => void
+  completeOnboarding: (goal: string) => void
+  resetOnboarding: () => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -27,17 +31,27 @@ export const useAppStore = create<AppStore>()(
       suggestions: [],
       taxResult: null,
       activeTab: "dashboard",
+      hasOnboarded: false,
+      userGoal: null,
       setTransactions: (transactions) => set({ transactions }),
       setSuggestions: (suggestions) => set({ suggestions }),
       setTaxResult: (taxResult) => set({ taxResult }),
       setActiveTab: (activeTab) => set({ activeTab }),
       clearTransactions: () =>
         set({ transactions: [], suggestions: [] }),
+      completeOnboarding: (goal) =>
+        set({ hasOnboarded: true, userGoal: goal, activeTab: "dashboard" }),
+      resetOnboarding: () =>
+        set({ hasOnboarded: false, userGoal: null }),
     }),
     {
       name: "wealth-app-store",
       // Never persist sensitive financial data to localStorage
-      partialize: (state) => ({ activeTab: state.activeTab }),
+      partialize: (state) => ({
+        activeTab: state.activeTab,
+        hasOnboarded: state.hasOnboarded,
+        userGoal: state.userGoal,
+      }),
     }
   )
 )

@@ -45,11 +45,13 @@ export function AISuggestionsPanel() {
   }
 
   return (
-    <Card className="border-[--border] bg-[--card]">
-      <CardHeader className="pb-2">
+    <Card className="border-[--border] bg-gradient-to-br from-slate-900/60 to-slate-950/40 hover:border-violet-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/10">
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-base text-white">
-            <Sparkles className="h-4 w-4 text-violet-400" />
+          <CardTitle className="flex items-center gap-2 text-lg text-white font-bold">
+            <div className="p-2 rounded-lg bg-violet-600/20">
+              <Sparkles className="h-5 w-5 text-violet-400" />
+            </div>
             AI Spending Suggestions
           </CardTitle>
           {transactions.length > 0 && (
@@ -57,7 +59,7 @@ export function AISuggestionsPanel() {
               size="sm"
               onClick={analyse}
               disabled={loading}
-              className="bg-violet-600 hover:bg-violet-700 text-xs"
+              className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-xs font-semibold shadow-lg shadow-violet-500/20"
             >
               {loading ? "Analysing…" : "Analyse"}
             </Button>
@@ -74,17 +76,19 @@ export function AISuggestionsPanel() {
 
         {loading &&
           [1, 2, 3].map((i) => (
-            <div key={i} className="space-y-2 rounded-lg border border-[--border] p-3">
-              <Skeleton className="h-4 w-40 bg-slate-700" />
+            <div key={i} className="space-y-2 rounded-lg border border-slate-700/50 bg-slate-800/30 p-4">
+              <Skeleton className="h-5 w-40 bg-slate-700" />
               <Skeleton className="h-3 w-full bg-slate-700" />
               <Skeleton className="h-3 w-3/4 bg-slate-700" />
             </div>
           ))}
 
         {!loading && suggestions.length === 0 && !error && (
-          <p className="py-6 text-center text-sm text-slate-500">
-            Click &ldquo;Analyse&rdquo; to get personalised suggestions from Claude AI
-          </p>
+          <div className="py-8 text-center">
+            <p className="text-sm text-slate-400">
+              💡 Click &ldquo;Analyse&rdquo; to get personalized savings recommendations
+            </p>
+          </div>
         )}
 
         {!loading &&

@@ -7,18 +7,25 @@ import { GrowthProjectionSection } from "@/components/growth/GrowthProjectionSec
 import { AccountsExplainer } from "@/components/accounts/AccountsExplainer"
 import { TaxSimulator } from "@/components/tax/TaxSimulator"
 import { TermsPage } from "@/components/layout/TermsPage"
+import { LandingPage } from "@/components/landing/LandingPage"
 
 export default function Home() {
-  const { activeTab } = useAppStore()
+  const { activeTab, hasOnboarded } = useAppStore()
+
+  if (!hasOnboarded) {
+    return <LandingPage />
+  }
 
   return (
-    <div className="min-h-[80vh]">
-      {activeTab === "dashboard" && <DashboardShell />}
-      {activeTab === "upload" && <UploadSection />}
-      {activeTab === "growth" && <GrowthProjectionSection />}
-      {activeTab === "accounts" && <AccountsExplainer />}
-      {activeTab === "tax" && <TaxSimulator />}
-      {activeTab === "terms" && <TermsPage />}
-    </div>
+    <main className="min-h-[80vh] bg-gradient-to-b from-[--background] to-[--background] py-8 md:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {activeTab === "dashboard" && <DashboardShell />}
+        {activeTab === "upload" && <UploadSection />}
+        {activeTab === "growth" && <GrowthProjectionSection />}
+        {activeTab === "accounts" && <AccountsExplainer />}
+        {activeTab === "tax" && <TaxSimulator />}
+        {activeTab === "terms" && <TermsPage />}
+      </div>
+    </main>
   )
 }

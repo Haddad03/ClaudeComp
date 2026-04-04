@@ -85,11 +85,13 @@ export function DashboardShell() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white">Your Financial Dashboard</h2>
-        <p className="text-slate-400">
-          {transactions.length} transactions analysed
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+          Your Financial Dashboard
+        </h1>
+        <p className="text-lg text-slate-400">
+          {transactions.length} transactions analysed • AI-powered insights
         </p>
       </div>
       <OverviewCards />

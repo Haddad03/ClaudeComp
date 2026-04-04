@@ -83,11 +83,13 @@ export function UploadSection() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white">Upload Statement</h2>
-        <p className="text-slate-400">
-          Upload a bank or credit card statement (CSV) to get started
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+          Upload Statement
+        </h1>
+        <p className="text-lg text-slate-400">
+          Upload a CSV or PDF statement to analyze your spending and get AI insights
         </p>
       </div>
 
@@ -102,10 +104,10 @@ export function UploadSection() {
       {transactions.length === 0 && (
         <Card
           className={cn(
-            "cursor-pointer border-2 border-dashed bg-[--card] transition-colors",
+            "cursor-pointer border-2 border-dashed bg-gradient-to-br transition-all duration-300",
             dragging
-              ? "border-violet-500 bg-violet-500/5"
-              : "border-[--border] hover:border-violet-500/50"
+              ? "border-violet-500 from-violet-600/20 to-violet-600/5 shadow-lg shadow-violet-500/20"
+              : "border-[--border] from-slate-600/5 to-slate-500/5 hover:border-violet-500/50 hover:shadow-md hover:shadow-violet-500/10"
           )}
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
@@ -117,16 +119,25 @@ export function UploadSection() {
             if (file) handleFile(file)
           }}
         >
-          <CardContent className="flex flex-col items-center gap-4 py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-600/20">
-              <Upload className="h-8 w-8 text-violet-400" />
+          <CardContent className="flex flex-col items-center gap-4 py-20">
+            <div className={cn(
+              "flex h-20 w-20 items-center justify-center rounded-2xl transition-all duration-300",
+              dragging ? "bg-violet-600/30 scale-110" : "bg-violet-600/20"
+            )}>
+              <Upload className={cn(
+                "h-10 w-10 transition-all duration-300",
+                dragging ? "text-violet-300 scale-110" : "text-violet-400"
+              )} />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-white">
-                Drop your CSV here, or click to browse
+              <p className="font-semibold text-white text-lg">
+                {dragging ? "Drop your file here..." : "Drag & drop your statement here"}
               </p>
-              <p className="mt-1 text-sm text-slate-400">
-                Supports CSV and PDF bank statements
+              <p className="mt-2 text-sm text-slate-400">
+                or click to browse (CSV or PDF)
+              </p>
+              <p className="mt-3 text-xs text-slate-500">
+                💡 Supports TD, RBC, BMO, Scotiabank, CIBC and others
               </p>
             </div>
             <input
@@ -145,10 +156,10 @@ export function UploadSection() {
 
       {/* Demo button */}
       {transactions.length === 0 && (
-        <div className="flex items-center gap-3">
-          <div className="h-px flex-1 bg-[--border]" />
-          <span className="text-sm text-slate-500">or</span>
-          <div className="h-px flex-1 bg-[--border]" />
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-gradient-to-r from-[--border] to-transparent" />
+          <span className="text-sm font-medium text-slate-500">or try demo</span>
+          <div className="h-px flex-1 bg-gradient-to-l from-[--border] to-transparent" />
         </div>
       )}
 
@@ -158,13 +169,13 @@ export function UploadSection() {
             variant="outline"
             onClick={loadDemo}
             disabled={loading}
-            className="gap-2 border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="gap-2 border-0 bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white font-semibold px-6 py-3 shadow-lg shadow-violet-500/30 hover:shadow-lg hover:shadow-violet-500/50 transition-all duration-200"
           >
-            <Sparkles className="h-4 w-4 text-violet-400" />
+            <Sparkles className="h-4 w-4" />
             {loading ? "Loading…" : "Try with demo data"}
           </Button>
-          <p className="mt-2 text-xs text-slate-500">
-            20 realistic Canadian transactions, no upload needed
+          <p className="mt-3 text-sm text-slate-400">
+            ✨ 20 realistic Canadian transactions, no upload needed
           </p>
         </div>
       )}

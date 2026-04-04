@@ -2,10 +2,13 @@
 
 import { useState } from "react"
 import { AlertTriangle, X } from "lucide-react"
+import { useAppStore } from "@/store/appStore"
 
 export function DisclaimerBanner() {
   const [dismissed, setDismissed] = useState(false)
-  if (dismissed) return null
+  const { hasOnboarded } = useAppStore()
+
+  if (!hasOnboarded || dismissed) return null
 
   return (
     <div className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-2">

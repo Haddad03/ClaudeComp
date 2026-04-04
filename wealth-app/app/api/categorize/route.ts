@@ -70,11 +70,8 @@ export async function POST(request: Request) {
       let parsed: { id: string; category: string; confidence: number }[] = []
       try {
         const clean = text.replace(/```json?\n?/g, "").replace(/```/g, "").trim()
-        console.log("RAW RESPONSE:", clean.slice(0, 500))
         parsed = JSON.parse(clean)
-        console.log("PARSED SAMPLE:", parsed[0])
       } catch (e) {
-        console.log("PARSE FAILED:", e, "RAW:", text.slice(0, 300))
         parsed = batch.map((t) => ({ id: t.id, category: "Other", confidence: 0.5 }))
       }
 
