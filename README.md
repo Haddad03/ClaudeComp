@@ -1,36 +1,42 @@
 # WealthWise
 
-AI-powered financial tools for Canadians who don't have $1 million — yet.
+**AI-powered financial tools for everyday Canadians.**
+Built at the **Claude Builders Hackathon @ McGill** — April 4, 2026.
 
-Built at the **Claude Builders Hackathon @ McGill** (April 4, 2026).
+🌐 **Live demo:** [haddad03.github.io/ClaudeComp](https://haddad03.github.io/ClaudeComp/)
+
+> Not financial advice. For educational purposes only.
 
 ---
 
-## What it does
-
-WealthWise helps young Canadians understand and manage their money through six tools:
+## Features
 
 | Feature | Description |
-|---------|-------------|
-| **Statement Upload** | Upload a bank/credit card CSV → Claude AI categorizes every transaction |
-| **AI Spending Suggestions** | Claude analyzes your spending and recommends where to cut and what to do with saved money |
-| **Growth Projection** | Interactive chart showing compound interest growth over time with adjustable sliders |
-| **Accounts Explainer** | Plain-English breakdowns of TFSA, RRSP, and FHSA with mini growth charts |
-| **Tax Simulator** | Estimate your Canadian taxes (all 13 provinces/territories) and see RRSP savings |
-| **Terms & Disclaimer** | Full legal disclaimer — we are not financial advisors |
-
-> **Not financial advice.** AI can make mistakes. Always consult a qualified financial professional.
+|---|---|
+| **Auth & Accounts** | Sign up / log in · Terms acceptance · Free tier + subscription |
+| **Statement Upload** | Upload CSV or PDF → AI categorizes every transaction · First upload free |
+| **Dashboard** | Spending overview, category breakdown pie chart, AI suggestions |
+| **Growth Projection** | Compound interest simulator with rate presets (GIC, ETF, S&P 500…) |
+| **Tax Simulator** | Federal + provincial taxes for all 13 provinces · RRSP savings calculator |
+| **Accounts Explainer** | Plain-English guide to TFSA, RRSP, and FHSA with live growth charts |
+| **Spending History** | Save monthly snapshots · Compare months side-by-side · Year-over-year trend |
+| **AI Chatbot** | Ask any money question — powered by Claude Haiku |
+| **Offline / Demo mode** | Try with 20 realistic transactions — no API key needed |
+| **Mobile-friendly** | Bottom tab bar navigation, responsive on all screen sizes |
 
 ---
 
 ## Tech stack
 
-- **Framework:** Next.js 16 (App Router, TypeScript)
-- **Styling:** Tailwind CSS v4 + shadcn/ui (dark theme)
-- **Charts:** Recharts
-- **AI:** Anthropic SDK (`claude-sonnet-4-6`)
-- **State:** Zustand (persisted to localStorage)
-- **CSV parsing:** PapaParse
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 16 (App Router, TypeScript) |
+| Styling | Tailwind CSS v4 + shadcn/ui |
+| Charts | Recharts |
+| AI | Anthropic SDK — `claude-sonnet-4-6` (analysis) · `claude-haiku-4-5` (chatbot) |
+| State | Zustand 5 (persisted to localStorage) |
+| CSV parsing | PapaParse |
+| Deployment | GitHub Pages (static export) via GitHub Actions |
 
 ---
 
@@ -39,39 +45,50 @@ WealthWise helps young Canadians understand and manage their money through six t
 ### Prerequisites
 
 - Node.js 18+
-- An [Anthropic API key](https://console.anthropic.com/)
+- An [Anthropic API key](https://console.anthropic.com/) *(only needed for AI features)*
 
-### Setup
+### Run locally
 
 ```bash
-# Clone and install
-git clone <repo-url>
-cd wealth-app
+git clone https://github.com/Haddad03/ClaudeComp.git
+cd ClaudeComp/wealth-app
 npm install
 
-# Add your API key
+# AI features (optional)
 echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local
 
-# Run locally
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Build for production
+### Demo account
 
-```bash
-npm run build
-npm start
+| Username | Password | Access |
+|---|---|---|
+| `admin` | `admin` | Full access · No subscription required |
+| *(sign up)* | *(any)* | Free tier · 1 upload included |
+
+---
+
+## Deployment
+
+### GitHub Pages (static, auto-deploys on push to `main`)
+
+Offline features work. AI features (chatbot, AI categorization) require a server.
+
+```
+https://haddad03.github.io/ClaudeComp/
 ```
 
-### Deploy to Vercel
+### Vercel (full features)
 
 ```bash
+cd wealth-app
 npx vercel --prod
 ```
 
-Set `ANTHROPIC_API_KEY` in your Vercel project environment variables.
+Set `ANTHROPIC_API_KEY` in your Vercel environment variables.
 
 ---
 
@@ -80,50 +97,48 @@ Set `ANTHROPIC_API_KEY` in your Vercel project environment variables.
 ```
 wealth-app/
 ├── app/
-│   ├── layout.tsx              # Root layout, dark theme
-│   ├── page.tsx                # Main app — tab router
+│   ├── layout.tsx              # Root layout — Navbar + Chatbot
+│   ├── page.tsx                # Tab router (auth → onboarding → app)
 │   └── api/
 │       ├── categorize/         # POST: Claude categorizes transactions
-│       └── suggestions/        # POST: Claude generates spending advice
+│       ├── suggestions/        # POST: Claude generates spending advice
+│       ├── chat/               # POST: Claude Haiku chatbot
+│       └── parse-pdf/          # POST: extract transactions from PDF
 ├── components/
-│   ├── layout/                 # Navbar, DisclaimerBanner, TermsPage
+│   ├── auth/                   # AuthPage, SubscriptionModal
+│   ├── layout/                 # Navbar (mobile bottom bar), TermsPage, Chatbot
+│   ├── landing/                # Onboarding hero + goal selection
+│   ├── home/                   # HomePage with quick actions
 │   ├── dashboard/              # DashboardShell, OverviewCards, CategoryPieChart
-│   ├── upload/                 # UploadSection, TransactionTable, CategoryBadge
+│   ├── upload/                 # UploadSection, TransactionTable
 │   ├── suggestions/            # AISuggestionsPanel, SuggestionCard
 │   ├── growth/                 # GrowthProjectionSection
 │   ├── accounts/               # AccountsExplainer (TFSA/RRSP/FHSA)
-│   └── tax/                    # TaxSimulator
+│   ├── tax/                    # TaxSimulator
+│   └── history/                # HistoryPage (monthly snapshots + comparison)
 ├── lib/
 │   ├── claude.ts               # Anthropic client (server-only)
-│   ├── parseStatement.ts       # CSV parser + mock data generator
-│   ├── taxCalculator.ts        # Canadian tax brackets + CPP/EI
-│   ├── growthProjection.ts     # Compound interest formula
-│   ├── categories.ts           # Category colors, icons, labels
+│   ├── parseStatement.ts       # CSV parser + offline categorizer + demo data
+│   ├── taxCalculator.ts        # 2025 Canadian federal + provincial brackets
+│   ├── growthProjection.ts     # Compound interest projections
+│   ├── categories.ts           # Category colors, emojis, labels
 │   └── types.ts                # Shared TypeScript interfaces
 └── store/
-    └── appStore.ts             # Zustand global store
+    └── appStore.ts             # Zustand global store (auth, transactions, snapshots…)
 ```
 
 ---
 
-## CSV format support
+## Subscription model
 
-The CSV parser auto-detects column names. Supported formats include exports from:
-- TD Bank
-- RBC
-- BMO
-- Scotiabank
-- CIBC
-- Any CSV with `Date`, `Description`, and `Amount` (or `Debit`/`Credit`) columns
+| Tier | Uploads | AI Suggestions | History | Chatbot |
+|---|---|---|---|---|
+| **Free** | 1 | — | — | ✓ |
+| **Pro ($4.99/mo)** | Unlimited | ✓ | ✓ | ✓ |
+| **Admin** | Unlimited | ✓ | ✓ | ✓ |
 
-No upload? Hit **"Try with demo data"** for 20 realistic Canadian transactions.
+*Demo mode — no real payment required.*
 
 ---
 
-## Hackathon team
-
-Built in 8 hours at the Claude Builders Hackathon @ McGill, April 4, 2026.
-
-Track: **Economic Empowerment & Education**
-
-Powered by [Claude AI](https://anthropic.com) (Anthropic).
+Built with ❤️ at the Claude Builders Hackathon @ McGill · Powered by [Claude AI](https://anthropic.com)
