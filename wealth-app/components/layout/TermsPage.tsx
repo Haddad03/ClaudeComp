@@ -49,47 +49,47 @@ export function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Terms of Use & Disclaimer</h2>
-        <p className="text-slate-400">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground">Terms of Use & Disclaimer</h1>
+        <p className="text-lg font-medium text-muted-foreground mt-2">
           Please read this carefully before using WealthWise
         </p>
       </div>
 
       <Alert className="border-amber-500/40 bg-amber-500/10">
-        <AlertTriangle className="h-4 w-4 text-amber-400" />
-        <AlertDescription className="text-amber-200">
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-base font-semibold text-amber-800">
           <strong>Important:</strong> WealthWise is NOT a licensed financial advisor. All content is for educational purposes only. AI can make mistakes. Always consult a professional before making financial decisions.
         </AlertDescription>
       </Alert>
 
       <Card className="border-emerald-500/30 bg-emerald-500/5">
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-base text-emerald-300">
+          <CardTitle className="flex items-center gap-2 text-xl font-semibold text-emerald-700">
             <Shield className="h-4 w-4" />
             Our Commitment
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-slate-300">
+        <CardContent className="text-base text-foreground leading-relaxed">
           WealthWise was built to help everyday Canadians — especially young people who don't have $1 million — understand their finances better. We believe financial literacy should be accessible to everyone. We are students building a free educational tool at a hackathon, not a regulated financial services company.
         </CardContent>
       </Card>
 
       <div className="space-y-4">
         {sections.map((s) => (
-          <Card key={s.title} className="border-[--border] bg-[--card]">
+          <Card key={s.title} className="border-[--border] bg-card">
             <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-semibold text-white">{s.title}</CardTitle>
+              <CardTitle className="text-xl font-semibold text-foreground">{s.title}</CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
-              <p className="text-sm text-slate-400 leading-relaxed">{s.content}</p>
+              <p className="text-base text-muted-foreground leading-relaxed">{s.content}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="rounded-xl border border-[--border] bg-[--secondary] p-4 text-center text-sm text-slate-400">
+      <div className="rounded-xl border border-[--border] bg-[--secondary] p-4 text-center text-sm text-muted-foreground">
         <p>Built with ❤️ at the Claude Builders Hackathon @ McGill — April 4, 2026</p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground/70">
           Powered by Claude AI (Anthropic) · Not affiliated with the CRA or any financial institution
         </p>
       </div>
