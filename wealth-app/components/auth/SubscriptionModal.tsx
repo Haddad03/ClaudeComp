@@ -61,7 +61,7 @@ export function SubscriptionModal({ onClose }: Props) {
 
           {/* Pricing */}
           <div className="rounded-xl border-2 border-forest bg-forest/5 p-4 text-center">
-            <p className="text-3xl font-bold text-forest">$4.99<span className="text-base font-normal text-muted-foreground"> / month</span></p>
+            <p className="text-2xl sm:text-3xl font-bold text-forest">$4.99<span className="text-base font-normal text-muted-foreground"> / month</span></p>
             <p className="text-xs text-muted-foreground mt-1">Cancel anytime · 7-day free trial</p>
           </div>
 

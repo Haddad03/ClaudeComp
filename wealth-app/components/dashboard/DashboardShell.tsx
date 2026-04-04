@@ -22,7 +22,7 @@ export function DashboardShell() {
         </div>
 
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-forest">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-forest">
             Your money,{" "}
             <span className="bg-lime px-2 rounded-lg text-forest">
               finally clear
@@ -86,11 +86,11 @@ export function DashboardShell() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <h1 className="text-4xl font-bold text-forest">
+      <div className="space-y-2">
+        <h1 className="text-2xl sm:text-4xl font-bold text-forest">
           Your Financial Dashboard
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-sm sm:text-lg text-muted-foreground">
           {transactions.length} transactions analysed • AI-powered insights
         </p>
       </div>

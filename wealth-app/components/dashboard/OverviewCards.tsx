@@ -74,7 +74,7 @@ export function OverviewCards() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
-                  <p className="mt-2 text-3xl font-bold text-forest">{s.value}</p>
+                  <p className="mt-2 text-xl sm:text-3xl font-bold text-forest break-all">{s.value}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{s.sub}</p>
                 </div>
                 <div className="rounded-xl p-2.5 bg-forest">

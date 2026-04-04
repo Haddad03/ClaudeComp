@@ -191,7 +191,7 @@ export function HistoryPage() {
           </h2>
           <Card className="border-[--border] bg-card">
             <CardContent className="p-4 space-y-4">
-              <div className="flex flex-wrap gap-3 items-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-center">
                 <Select value={compareA} onValueChange={setCompareA}>
                   <SelectTrigger className="w-44 border-[--border] bg-[--secondary] text-foreground">
                     <SelectValue placeholder="Month A" />
@@ -215,7 +215,7 @@ export function HistoryPage() {
                 </Select>
 
                 {snapA && snapB && (
-                  <div className="ml-auto flex gap-4 text-sm">
+                  <div className="sm:ml-auto flex gap-4 text-sm">
                     {(() => {
                       const diff = snapB.totalSpending - snapA.totalSpending
                       const pct = snapA.totalSpending > 0 ? (diff / snapA.totalSpending) * 100 : 0
@@ -232,11 +232,11 @@ export function HistoryPage() {
               </div>
 
               {comparisonData.length > 0 && snapA && snapB && (
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={comparisonData} margin={{ top: 5, right: 20, left: 10, bottom: 60 }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={comparisonData} margin={{ top: 5, right: 10, left: 0, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="cat" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} angle={-35} textAnchor="end" interval={0} />
-                    <YAxis tickFormatter={(v) => `$${v}`} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} width={55} />
+                    <XAxis dataKey="cat" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
+                    <YAxis tickFormatter={(v) => `$${v}`} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} width={45} />
                     <Tooltip
                       formatter={(v, name) => [fmt(Number(v)), name]}
                       contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px" }}
@@ -261,11 +261,11 @@ export function HistoryPage() {
           </h2>
           <Card className="border-[--border] bg-card">
             <CardContent className="pt-4">
-              <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={trendData} margin={{ top: 5, right: 20, left: 10, bottom: 40 }}>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={trendData} margin={{ top: 5, right: 10, left: 0, bottom: 40 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="label" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} angle={-35} textAnchor="end" interval={0} />
-                  <YAxis tickFormatter={(v) => `$${v}`} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} width={55} />
+                  <XAxis dataKey="label" tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} angle={-35} textAnchor="end" interval={0} />
+                  <YAxis tickFormatter={(v) => `$${v}`} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} width={45} />
                   <Tooltip
                     formatter={(v) => [fmt(Number(v)), "Total spending"]}
                     contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px" }}

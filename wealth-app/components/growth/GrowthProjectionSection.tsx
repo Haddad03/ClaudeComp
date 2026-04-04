@@ -62,7 +62,7 @@ export function GrowthProjectionSection() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 grid-cols-1">
         <Card className="border-[--border] bg-card lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-base text-foreground">Your inputs</CardTitle>
@@ -142,7 +142,7 @@ export function GrowthProjectionSection() {
         </Card>
 
         <div className="space-y-4 lg:col-span-2">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
               { label: "Final value", value: formatCAD(finalValue), color: "text-violet-600" },
               { label: "You contribute", value: formatCAD(totalContributed), color: "text-sky-600" },
@@ -151,7 +151,7 @@ export function GrowthProjectionSection() {
               <Card key={s.label} className="border-[--border] bg-card">
                 <CardContent className="p-3">
                   <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p className={`text-sm sm:text-lg font-bold ${s.color} break-all`}>{s.value}</p>
                 </CardContent>
               </Card>
             ))}
@@ -159,7 +159,7 @@ export function GrowthProjectionSection() {
 
           <Card className="border-[--border] bg-card">
             <CardContent className="pt-4">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="year" tickFormatter={(v) => `Yr ${v}`} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />

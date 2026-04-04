@@ -159,19 +159,16 @@ export function HomePage() {
       {/* AI Assistant promo */}
       <button
         onClick={() => setChatOpen(true)}
-        className="flex w-full items-center gap-4 rounded-2xl border border-forest/20 bg-forest/5 px-6 py-4 text-left transition-colors hover:bg-forest/10"
+        className="flex w-full items-center gap-3 rounded-2xl border border-forest/20 bg-forest/5 px-4 sm:px-6 py-4 text-left transition-colors hover:bg-forest/10"
       >
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-forest text-lime shadow-sm">
-          <MessageCircle className="h-6 w-6" />
+        <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-forest text-lime shadow-sm">
+          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-forest">Have a money question?</p>
-          <p className="text-sm text-muted-foreground">Ask our AI assistant — TFSA, RRSP, budgeting, taxes, and more. Simple answers, instantly.</p>
+          <p className="font-semibold text-forest text-sm sm:text-base">Have a money question?</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Ask our AI — TFSA, RRSP, budgeting, taxes and more.</p>
         </div>
-        <div className="shrink-0 flex items-center gap-1.5 text-sm font-semibold text-forest">
-          <span>Chat now</span>
-          <ArrowRight className="h-4 w-4" />
-        </div>
+        <ArrowRight className="shrink-0 h-4 w-4 text-forest" />
       </button>
 
       {/* Tips section */}

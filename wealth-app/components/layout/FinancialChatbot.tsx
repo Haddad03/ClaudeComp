@@ -63,9 +63,11 @@ export function FinancialChatbot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6 bottom-20 right-4">
       {chatOpen && (
-        <div className="flex h-[520px] w-[360px] flex-col rounded-2xl border border-[--border] bg-card shadow-2xl">
+        <div className="flex flex-col rounded-2xl border border-[--border] bg-card shadow-2xl
+          fixed inset-x-3 bottom-20 top-4
+          sm:static sm:inset-auto sm:h-[520px] sm:w-[360px]">
           {/* Header */}
           <div className="flex items-center justify-between rounded-t-2xl border-b border-[--border] bg-[--secondary] px-4 py-3">
             <div className="flex items-center gap-2">
@@ -159,7 +161,7 @@ export function FinancialChatbot() {
       {/* Toggle button */}
       <button
         onClick={() => setChatOpen(!chatOpen)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95 relative z-10"
       >
         {chatOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>

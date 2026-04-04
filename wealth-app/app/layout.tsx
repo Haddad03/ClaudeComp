@@ -28,7 +28,7 @@ export default function RootLayout({
         <ThemeApplier />
         <Navbar />
         <DisclaimerBanner />
-        <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:py-8">{children}</main>
         <FinancialChatbot />
       </body>
     </html>
