@@ -10,10 +10,17 @@ import { TaxSimulator } from "@/components/tax/TaxSimulator"
 import { TermsPage } from "@/components/layout/TermsPage"
 import { LandingPage } from "@/components/landing/LandingPage"
 import { HistoryPage } from "@/components/history/HistoryPage"
+import { AuthPage } from "@/components/auth/AuthPage"
 
 export default function Home() {
-  const { activeTab, hasOnboarded } = useAppStore()
+  const { activeTab, hasOnboarded, currentUser } = useAppStore()
 
+  // Returning user who got logged out — show auth directly
+  if (!currentUser && hasOnboarded) {
+    return <AuthPage />
+  }
+
+  // New user — go through intro + goal selection + auth
   if (!hasOnboarded) {
     return <LandingPage />
   }

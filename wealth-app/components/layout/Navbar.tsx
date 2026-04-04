@@ -11,6 +11,8 @@ import {
   LineChart,
   Shield,
   History,
+  LogOut,
+  Crown,
 } from "lucide-react"
 
 const tabs = [
@@ -25,7 +27,7 @@ const tabs = [
 ]
 
 export function Navbar() {
-  const { activeTab, setActiveTab, hasOnboarded } = useAppStore()
+  const { activeTab, setActiveTab, hasOnboarded, currentUser, logout } = useAppStore()
 
   if (!hasOnboarded) return null
 
@@ -63,14 +65,38 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Mobile: show active tab label */}
-          <div className="sm:hidden flex items-center gap-2">
-            {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
-              <div key={label} className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-forest" />
-                <span className="text-sm font-medium text-forest">{label}</span>
+          <div className="flex items-center gap-2">
+            {/* Mobile: active tab label */}
+            <div className="sm:hidden flex items-center gap-2">
+              {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-forest" />
+                  <span className="text-sm font-medium text-forest">{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* User badge */}
+            {currentUser && (
+              <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1.5 rounded-xl bg-[--secondary] px-3 py-1.5">
+                  {(currentUser.isSubscribed || currentUser.id === "admin") && (
+                    <Crown className="h-3.5 w-3.5 text-amber-500" />
+                  )}
+                  <span className="text-sm font-medium text-foreground">{currentUser.username}</span>
+                  {!currentUser.isSubscribed && currentUser.id !== "admin" && (
+                    <span className="text-xs text-muted-foreground">· Free</span>
+                  )}
+                </div>
+                <button
+                  onClick={logout}
+                  title="Log out"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[--border] bg-card text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all duration-200"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

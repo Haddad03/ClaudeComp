@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { AuthPage } from "@/components/auth/AuthPage"
 
 const goals = [
   {
@@ -61,13 +62,35 @@ const features = [
 ]
 
 export function LandingPage() {
-  const { completeOnboarding } = useAppStore()
-  const [step, setStep] = useState<"hero" | "goals">("hero")
+  const { completeOnboarding, currentUser } = useAppStore()
+  const [step, setStep] = useState<"hero" | "goals" | "auth">("hero")
   const [selected, setSelected] = useState<string | null>(null)
 
   function handleGoalSubmit() {
     if (!selected) return
-    completeOnboarding(selected)
+    // If already logged in, skip auth step
+    if (currentUser) {
+      completeOnboarding(selected)
+    } else {
+      setStep("auth")
+    }
+  }
+
+  // Auth step — shown after goal selection
+  if (step === "auth") {
+    return (
+      <div className="-mx-4 -my-8 min-h-screen bg-[--background]">
+        <div className="absolute top-6 left-6">
+          <button
+            onClick={() => setStep("goals")}
+            className="text-sm text-muted-foreground hover:text-forest transition-colors"
+          >
+            ← Back
+          </button>
+        </div>
+        <AuthPage onSuccess={() => completeOnboarding(selected!)} />
+      </div>
+    )
   }
 
   if (step === "goals") {
@@ -78,11 +101,12 @@ export function LandingPage() {
           <div className="mb-8 flex items-center justify-center gap-2">
             <div className="h-2 w-8 rounded-full bg-forest/30" />
             <div className="h-2 w-8 rounded-full bg-forest" />
+            <div className="h-2 w-8 rounded-full bg-forest/30" />
           </div>
 
           <div className="mb-10 text-center">
             <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-              Step 2 of 2
+              Step 2 of 3
             </p>
             <h2 className="mt-3 text-3xl font-bold text-forest">
               What&apos;s your main goal?
@@ -161,6 +185,7 @@ export function LandingPage() {
         <div className="mb-8 flex items-center gap-2">
           <div className="h-2 w-8 rounded-full bg-forest" />
           <div className="h-2 w-8 rounded-full bg-forest/30" />
+          <div className="h-2 w-8 rounded-full bg-forest/30" />
         </div>
 
         {/* Headline */}
@@ -187,7 +212,7 @@ export function LandingPage() {
         </Button>
 
         <p className="mt-4 text-sm text-muted-foreground">
-          No account required &nbsp;·&nbsp; Free to use &nbsp;·&nbsp; Your data stays on your device
+          First upload free &nbsp;·&nbsp; No credit card &nbsp;·&nbsp; Your data stays on your device
         </p>
 
         {/* Feature cards */}
@@ -206,12 +231,12 @@ export function LandingPage() {
 
         {/* Bottom CTA */}
         <div className="mt-16 flex items-center gap-4 text-sm text-muted-foreground">
-          <span>Already familiar?</span>
+          <span>Already have an account?</span>
           <button
-            onClick={() => completeOnboarding("general")}
+            onClick={() => { setSelected("general"); setStep("auth") }}
             className="text-forest hover:text-forest-dark underline underline-offset-4 transition-colors font-medium"
           >
-            Skip intro and go to the app →
+            Log in →
           </button>
         </div>
       </div>
