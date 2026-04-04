@@ -78,6 +78,18 @@ export interface ProjectionDataPoint {
   withoutSavings: number
 }
 
+// Monthly snapshot for history & comparison
+export interface MonthlySnapshot {
+  id: string
+  label: string
+  month: number
+  year: number
+  savedAt: string
+  transactions: CategorizedTransaction[]
+  totalSpending: number
+  categoryTotals: Record<string, number>
+}
+
 // Category summary
 export interface CategorySummary {
   category: TransactionCategory

@@ -10,8 +10,7 @@ import {
   BookOpen,
   LineChart,
   Shield,
-  Sun,
-  Moon,
+  History,
 } from "lucide-react"
 
 const tabs = [
@@ -21,11 +20,12 @@ const tabs = [
   { id: "growth", label: "Growth", icon: LineChart },
   { id: "accounts", label: "Accounts", icon: BookOpen },
   { id: "tax", label: "Tax Sim", icon: Calculator },
+  { id: "history", label: "History", icon: History },
   { id: "terms", label: "Terms", icon: Shield },
 ]
 
 export function Navbar() {
-  const { activeTab, setActiveTab, hasOnboarded, theme, setTheme } = useAppStore()
+  const { activeTab, setActiveTab, hasOnboarded } = useAppStore()
 
   if (!hasOnboarded) return null
 
@@ -63,30 +63,14 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Right side: theme toggle + mobile active tab */}
-          <div className="flex items-center gap-3">
-            {/* Mobile: show active tab label */}
-            <div className="sm:hidden flex items-center gap-2">
-              {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-forest" />
-                  <span className="text-sm font-medium text-forest">{label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Theme toggle */}
-            <button
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[--border] bg-card text-muted-foreground hover:bg-cream-dark hover:text-forest transition-all duration-200"
-              aria-label="Toggle theme"
-            >
-              {theme === "light" ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </button>
+          {/* Mobile: show active tab label */}
+          <div className="sm:hidden flex items-center gap-2">
+            {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
+              <div key={label} className="flex items-center gap-2">
+                <Icon className="h-4 w-4 text-forest" />
+                <span className="text-sm font-medium text-forest">{label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

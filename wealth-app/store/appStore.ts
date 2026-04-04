@@ -6,6 +6,7 @@ import type {
   CategorizedTransaction,
   AISuggestion,
   TaxResult,
+  MonthlySnapshot,
 } from "@/lib/types"
 
 interface AppStore {
@@ -15,9 +16,9 @@ interface AppStore {
   activeTab: string
   hasOnboarded: boolean
   userGoal: string | null
-  theme: "light" | "dark"
   termsAccepted: boolean
   chatOpen: boolean
+  snapshots: MonthlySnapshot[]
   setTransactions: (t: CategorizedTransaction[]) => void
   setSuggestions: (s: AISuggestion[]) => void
   setTaxResult: (r: TaxResult) => void
@@ -25,9 +26,10 @@ interface AppStore {
   clearTransactions: () => void
   completeOnboarding: (goal: string) => void
   resetOnboarding: () => void
-  setTheme: (theme: "light" | "dark") => void
   acceptTerms: () => void
   setChatOpen: (open: boolean) => void
+  saveSnapshot: (label: string) => void
+  deleteSnapshot: (id: string) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -39,9 +41,9 @@ export const useAppStore = create<AppStore>()(
       activeTab: "home",
       hasOnboarded: false,
       userGoal: null,
-      theme: "light",
       termsAccepted: false,
       chatOpen: false,
+      snapshots: [],
       setTransactions: (transactions) => set({ transactions }),
       setSuggestions: (suggestions) => set({ suggestions }),
       setTaxResult: (taxResult) => set({ taxResult }),
@@ -52,9 +54,30 @@ export const useAppStore = create<AppStore>()(
         set({ hasOnboarded: true, userGoal: goal, activeTab: "home" }),
       resetOnboarding: () =>
         set({ hasOnboarded: false, userGoal: null }),
-      setTheme: (theme) => set({ theme }),
       acceptTerms: () => set({ termsAccepted: true }),
       setChatOpen: (chatOpen) => set({ chatOpen }),
+      saveSnapshot: (label) =>
+        set((state) => {
+          const categoryTotals: Record<string, number> = {}
+          for (const tx of state.transactions) {
+            categoryTotals[tx.category] = (categoryTotals[tx.category] ?? 0) + tx.amount
+          }
+          const totalSpending = Object.values(categoryTotals).reduce((a, b) => a + b, 0)
+          const now = new Date()
+          const snapshot: MonthlySnapshot = {
+            id: `snap-${Date.now()}`,
+            label,
+            month: now.getMonth() + 1,
+            year: now.getFullYear(),
+            savedAt: now.toISOString(),
+            transactions: state.transactions,
+            totalSpending,
+            categoryTotals,
+          }
+          return { snapshots: [...state.snapshots, snapshot] }
+        }),
+      deleteSnapshot: (id) =>
+        set((state) => ({ snapshots: state.snapshots.filter((s) => s.id !== id) })),
     }),
     {
       name: "wealth-app-store",
@@ -62,8 +85,8 @@ export const useAppStore = create<AppStore>()(
         activeTab: state.activeTab,
         hasOnboarded: state.hasOnboarded,
         userGoal: state.userGoal,
-        theme: state.theme,
         termsAccepted: state.termsAccepted,
+        snapshots: state.snapshots,
       }),
     }
   )

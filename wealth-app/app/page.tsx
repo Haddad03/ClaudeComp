@@ -9,6 +9,7 @@ import { AccountsExplainer } from "@/components/accounts/AccountsExplainer"
 import { TaxSimulator } from "@/components/tax/TaxSimulator"
 import { TermsPage } from "@/components/layout/TermsPage"
 import { LandingPage } from "@/components/landing/LandingPage"
+import { HistoryPage } from "@/components/history/HistoryPage"
 
 export default function Home() {
   const { activeTab, hasOnboarded } = useAppStore()
@@ -26,6 +27,7 @@ export default function Home() {
         {activeTab === "growth" && <GrowthProjectionSection />}
         {activeTab === "accounts" && <AccountsExplainer />}
         {activeTab === "tax" && <TaxSimulator />}
+        {activeTab === "history" && <HistoryPage />}
         {activeTab === "terms" && <TermsPage />}
       </div>
     </main>
