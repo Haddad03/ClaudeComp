@@ -1,6 +1,10 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, AlertTriangle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Shield, AlertTriangle, CheckCircle2 } from "lucide-react"
+import { useAppStore } from "@/store/appStore"
 
 const sections = [
   {
@@ -46,6 +50,8 @@ const sections = [
 ]
 
 export function TermsPage() {
+  const { termsAccepted, acceptTerms } = useAppStore()
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -85,6 +91,24 @@ export function TermsPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="rounded-xl border border-[--border] bg-card p-6 flex flex-col items-center gap-4">
+        {termsAccepted ? (
+          <div className="flex items-center gap-2 text-emerald-600 font-semibold">
+            <CheckCircle2 className="h-5 w-5" />
+            You have accepted the Terms of Use
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground text-center">
+              By clicking Accept, you confirm you have read and understood these terms.
+            </p>
+            <Button onClick={acceptTerms} className="px-8">
+              Accept Terms of Use
+            </Button>
+          </>
+        )}
       </div>
 
       <div className="rounded-xl border border-[--border] bg-[--secondary] p-4 text-center text-sm text-muted-foreground">
