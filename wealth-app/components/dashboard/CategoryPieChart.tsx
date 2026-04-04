@@ -10,7 +10,7 @@ import {
 } from "recharts"
 import { useAppStore } from "@/store/appStore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CATEGORY_COLORS, CATEGORY_EMOJIS } from "@/lib/categories"
+import { CATEGORY_COLORS } from "@/lib/categories"
 import type { TransactionCategory } from "@/lib/types"
 
 export function CategoryPieChart() {
@@ -39,9 +39,7 @@ export function CategoryPieChart() {
       const cat = payload[0].name as TransactionCategory
       return (
         <div className="rounded-xl border border-[--border] bg-card p-3 text-sm shadow-md">
-          <p className="font-medium text-forest">
-            {CATEGORY_EMOJIS[cat]} {cat}
-          </p>
+          <p className="font-medium text-forest">{cat}</p>
           <p className="text-muted-foreground">${payload[0].value.toFixed(2)}</p>
         </div>
       )
@@ -78,9 +76,7 @@ export function CategoryPieChart() {
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
-              formatter={(value) =>
-                `${CATEGORY_EMOJIS[value as TransactionCategory] ?? ""} ${value}`
-              }
+              formatter={(value) => value}
               wrapperStyle={{ fontSize: "12px", color: "oklch(0.52 0.03 145)" }}
             />
           </PieChart>

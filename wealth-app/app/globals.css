@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -39,7 +38,7 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.97 0.015 100);
+  --background: oklch(0.965 0.01 100);
   --foreground: oklch(0.18 0.04 145);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.04 145);
@@ -47,15 +46,15 @@
   --popover-foreground: oklch(0.18 0.04 145);
   --primary: oklch(0.28 0.07 145);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.96 0.03 100);
+  --secondary: oklch(0.93 0.02 100);
   --secondary-foreground: oklch(0.28 0.07 145);
-  --muted: oklch(0.94 0.02 100);
-  --muted-foreground: oklch(0.52 0.03 145);
+  --muted: oklch(0.92 0.015 100);
+  --muted-foreground: oklch(0.45 0.03 145);
   --accent: oklch(0.88 0.22 120);
   --accent-foreground: oklch(0.18 0.08 145);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.90 0.02 100);
-  --input: oklch(0.90 0.02 100);
+  --border: oklch(0.85 0.02 100);
+  --input: oklch(0.85 0.02 100);
   --ring: oklch(0.88 0.22 120);
   --chart-1: oklch(0.88 0.22 120);
   --chart-2: oklch(0.28 0.07 145);
@@ -68,43 +67,10 @@
   --lime-dark: oklch(0.78 0.20 120);
   --forest: oklch(0.28 0.07 145);
   --forest-dark: oklch(0.20 0.06 145);
-  --cream: oklch(0.97 0.015 100);
-  --cream-dark: oklch(0.93 0.025 100);
+  --cream: oklch(0.965 0.01 100);
+  --cream-dark: oklch(0.90 0.02 100);
 }
 
-.dark {
-  --background: oklch(0.12 0.03 145);
-  --foreground: oklch(0.95 0.015 100);
-  --card: oklch(0.17 0.03 145);
-  --card-foreground: oklch(0.95 0.015 100);
-  --popover: oklch(0.17 0.03 145);
-  --popover-foreground: oklch(0.95 0.015 100);
-  --primary: oklch(0.60 0.18 145);
-  --primary-foreground: oklch(0.12 0.03 145);
-  --secondary: oklch(0.22 0.04 145);
-  --secondary-foreground: oklch(0.95 0.015 100);
-  --muted: oklch(0.22 0.04 145);
-  --muted-foreground: oklch(0.62 0.04 145);
-  --accent: oklch(0.88 0.22 120);
-  --accent-foreground: oklch(0.12 0.03 145);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.27 0.05 145);
-  --input: oklch(0.27 0.05 145);
-  --ring: oklch(0.88 0.22 120);
-  --chart-1: oklch(0.88 0.22 120);
-  --chart-2: oklch(0.60 0.18 145);
-  --chart-3: oklch(0.75 0.18 120);
-  --chart-4: oklch(0.50 0.14 145);
-  --chart-5: oklch(0.40 0.10 145);
-
-  /* Custom finance tokens — dark mode */
-  --lime: oklch(0.88 0.22 120);
-  --lime-dark: oklch(0.78 0.20 120);
-  --forest: oklch(0.62 0.17 145);
-  --forest-dark: oklch(0.52 0.14 145);
-  --cream: oklch(0.17 0.03 145);
-  --cream-dark: oklch(0.22 0.04 145);
-}
 
 * {
   border-color: var(--border);

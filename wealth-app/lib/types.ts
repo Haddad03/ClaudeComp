@@ -1,3 +1,15 @@
+// Auth / subscription
+export interface AppUser {
+  id: string
+  username: string
+  email: string
+  password: string        // plaintext — demo only, not for production
+  isSubscribed: boolean
+  hasUsedFreeUpload: boolean
+  termsAccepted: boolean
+  createdAt: string
+}
+
 // Transaction types
 export interface RawTransaction {
   id: string
@@ -76,6 +88,18 @@ export interface ProjectionDataPoint {
   withSavings: number
   contributionsOnly: number
   withoutSavings: number
+}
+
+// Monthly snapshot for history & comparison
+export interface MonthlySnapshot {
+  id: string
+  label: string
+  month: number
+  year: number
+  savedAt: string
+  transactions: CategorizedTransaction[]
+  totalSpending: number
+  categoryTotals: Record<string, number>
 }
 
 // Category summary

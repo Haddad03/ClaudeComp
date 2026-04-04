@@ -6,18 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TransactionTable } from "./TransactionTable"
-import { parseCSV, generateMockTransactions } from "@/lib/parseStatement"
+import { parseCSV, generateMockTransactions, categorizeOffline } from "@/lib/parseStatement"
 import type { CategorizedTransaction, RawTransaction } from "@/lib/types"
 import { Upload, FileText, Sparkles, Trash2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { SubscriptionModal } from "@/components/auth/SubscriptionModal"
 
 export function UploadSection() {
-  const { transactions, setTransactions, clearTransactions, setActiveTab } =
+  const { transactions, setTransactions, clearTransactions, setActiveTab, currentUser, markFreeUploadUsed } =
     useAppStore()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const canUpload = currentUser?.isSubscribed || !currentUser?.hasUsedFreeUpload
 
   async function processTransactions(raw: RawTransaction[]) {
     setLoading(true)
@@ -31,6 +35,7 @@ export function UploadSection() {
       if (!res.ok) throw new Error(await res.text())
       const categorized: CategorizedTransaction[] = await res.json()
       setTransactions(categorized)
+      markFreeUploadUsed()
     } catch (e) {
       setError(e instanceof Error ? e.message : "Categorization failed")
     } finally {
@@ -39,6 +44,7 @@ export function UploadSection() {
   }
 
   async function handleFile(file: File) {
+    if (!canUpload) { setShowPaywall(true); return }
     if (file.name.endsWith(".pdf")) {
       setLoading(true)
       setError(null)
@@ -77,12 +83,17 @@ export function UploadSection() {
     }
   }
 
-  async function loadDemo() {
+  function loadDemo() {
+    if (!canUpload) { setShowPaywall(true); return }
     const raw = generateMockTransactions()
-    await processTransactions(raw)
+    const categorized = categorizeOffline(raw)
+    setTransactions(categorized)
+    markFreeUploadUsed()
   }
 
   return (
+    <>
+    {showPaywall && <SubscriptionModal onClose={() => setShowPaywall(false)} />}
     <div className="space-y-8">
       <div className="space-y-3">
         <h1 className="text-4xl font-bold text-forest">
@@ -92,6 +103,18 @@ export function UploadSection() {
           Upload a CSV or PDF statement to analyze your spending and get AI insights
         </p>
       </div>
+
+      {!canUpload && (
+        <Alert className="border-amber-500/30 bg-amber-500/10">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-700 font-medium">
+            You&apos;ve used your free upload.{" "}
+            <button onClick={() => setShowPaywall(true)} className="underline font-semibold hover:text-amber-900">
+              Subscribe to upload more →
+            </button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {error && (
         <Alert className="border-red-500/30 bg-red-500/10">
@@ -168,14 +191,13 @@ export function UploadSection() {
           <Button
             variant="outline"
             onClick={loadDemo}
-            disabled={loading}
             className="gap-2 border-0 bg-lime hover:bg-lime-dark text-forest font-semibold px-6 py-3 shadow-sm transition-all duration-200"
           >
             <Sparkles className="h-4 w-4" />
-            {loading ? "Loading…" : "Try with demo data"}
+            Try with demo data
           </Button>
           <p className="mt-3 text-sm text-muted-foreground">
-            ✨ 20 realistic Canadian transactions, no upload needed
+            ✨ 20 realistic Canadian transactions — instant, no API needed
           </p>
         </div>
       )}
@@ -221,5 +243,6 @@ export function UploadSection() {
         </Card>
       )}
     </div>
+    </>
   )
 }

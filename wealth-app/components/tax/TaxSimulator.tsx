@@ -64,7 +64,7 @@ export function TaxSimulator() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 grid-cols-1">
         {/* Inputs */}
         <Card className="border-[--border] bg-card lg:col-span-1">
           <CardHeader className="pb-2">
@@ -145,7 +145,7 @@ export function TaxSimulator() {
               <Card key={s.label} className="border-[--border] bg-card">
                 <CardContent className="p-3">
                   <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
+                  <p className={`text-sm sm:text-lg font-bold ${s.color} break-all`}>{s.value}</p>
                 </CardContent>
               </Card>
             ))}
@@ -159,11 +159,11 @@ export function TaxSimulator() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+                  <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} width={40} />
                   <Tooltip
                     formatter={(v) => fmt(Number(v))}
                     contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--card-foreground)" }}

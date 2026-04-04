@@ -4,6 +4,7 @@ import "./globals.css"
 import { Navbar } from "@/components/layout/Navbar"
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner"
 import { ThemeApplier } from "@/components/layout/ThemeApplier"
+import { FinancialChatbot } from "@/components/layout/FinancialChatbot"
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,8 @@ export default function RootLayout({
         <ThemeApplier />
         <Navbar />
         <DisclaimerBanner />
-        <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:py-8">{children}</main>
+        <FinancialChatbot />
       </body>
     </html>
   )
