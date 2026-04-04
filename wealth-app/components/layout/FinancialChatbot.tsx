@@ -1,28 +1,34 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { MessageCircle, X, Send, Loader2, Bot, User } from "lucide-react"
+import { MessageCircle, X, Send, Loader2, Bot, User, RotateCcw } from "lucide-react"
+import { useAppStore } from "@/store/appStore"
 
 interface Message {
   role: "user" | "assistant"
   content: string
 }
 
+const WELCOME: Message = {
+  role: "assistant",
+  content: "Hi! I'm your WealthWise financial education assistant. Ask me anything about TFSAs, RRSPs, investing, taxes, or budgeting. 💬",
+}
+
 export function FinancialChatbot() {
-  const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Hi! I'm your WealthWise financial education assistant. Ask me anything about TFSAs, RRSPs, investing, taxes, or budgeting. 💬",
-    },
-  ])
+  const { chatOpen, setChatOpen } = useAppStore()
+  const [messages, setMessages] = useState<Message[]>([WELCOME])
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, open])
+    if (chatOpen) bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, chatOpen])
+
+  function restart() {
+    setMessages([WELCOME])
+    setInput("")
+  }
 
   async function send() {
     const text = input.trim()
@@ -58,7 +64,7 @@ export function FinancialChatbot() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      {open && (
+      {chatOpen && (
         <div className="flex h-[520px] w-[360px] flex-col rounded-2xl border border-[--border] bg-card shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between rounded-t-2xl border-b border-[--border] bg-[--secondary] px-4 py-3">
@@ -71,12 +77,21 @@ export function FinancialChatbot() {
                 <p className="text-xs text-muted-foreground">Financial education · Not advice</p>
               </div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded-lg p-1 text-muted-foreground hover:bg-[--border] transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={restart}
+                title="Restart conversation"
+                className="rounded-lg p-1 text-muted-foreground hover:bg-[--border] transition-colors"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setChatOpen(false)}
+                className="rounded-lg p-1 text-muted-foreground hover:bg-[--border] transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -143,10 +158,10 @@ export function FinancialChatbot() {
 
       {/* Toggle button */}
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setChatOpen(!chatOpen)}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {chatOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
     </div>
   )

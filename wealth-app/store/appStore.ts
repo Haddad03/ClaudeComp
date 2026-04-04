@@ -17,6 +17,7 @@ interface AppStore {
   userGoal: string | null
   theme: "light" | "dark"
   termsAccepted: boolean
+  chatOpen: boolean
   setTransactions: (t: CategorizedTransaction[]) => void
   setSuggestions: (s: AISuggestion[]) => void
   setTaxResult: (r: TaxResult) => void
@@ -26,6 +27,7 @@ interface AppStore {
   resetOnboarding: () => void
   setTheme: (theme: "light" | "dark") => void
   acceptTerms: () => void
+  setChatOpen: (open: boolean) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -39,6 +41,7 @@ export const useAppStore = create<AppStore>()(
       userGoal: null,
       theme: "light",
       termsAccepted: false,
+      chatOpen: false,
       setTransactions: (transactions) => set({ transactions }),
       setSuggestions: (suggestions) => set({ suggestions }),
       setTaxResult: (taxResult) => set({ taxResult }),
@@ -51,6 +54,7 @@ export const useAppStore = create<AppStore>()(
         set({ hasOnboarded: false, userGoal: null }),
       setTheme: (theme) => set({ theme }),
       acceptTerms: () => set({ termsAccepted: true }),
+      setChatOpen: (chatOpen) => set({ chatOpen }),
     }),
     {
       name: "wealth-app-store",

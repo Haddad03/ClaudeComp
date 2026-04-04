@@ -70,7 +70,7 @@ const tips = [
 ]
 
 export function HomePage() {
-  const { setActiveTab, userGoal, transactions } = useAppStore()
+  const { setActiveTab, userGoal, transactions, setChatOpen } = useAppStore()
 
   const goalLabel: Record<string, string> = {
     spending: "fixing your spending",
@@ -157,7 +157,10 @@ export function HomePage() {
       )}
 
       {/* AI Assistant promo */}
-      <div className="flex items-center gap-4 rounded-2xl border border-forest/20 bg-forest/5 px-6 py-4">
+      <button
+        onClick={() => setChatOpen(true)}
+        className="flex w-full items-center gap-4 rounded-2xl border border-forest/20 bg-forest/5 px-6 py-4 text-left transition-colors hover:bg-forest/10"
+      >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-forest text-lime shadow-sm">
           <MessageCircle className="h-6 w-6" />
         </div>
@@ -169,7 +172,7 @@ export function HomePage() {
           <span>Chat now</span>
           <ArrowRight className="h-4 w-4" />
         </div>
-      </div>
+      </button>
 
       {/* Tips section */}
       <div>

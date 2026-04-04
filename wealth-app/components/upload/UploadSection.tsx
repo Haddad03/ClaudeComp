@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TransactionTable } from "./TransactionTable"
-import { parseCSV, generateMockTransactions } from "@/lib/parseStatement"
+import { parseCSV, generateMockTransactions, categorizeOffline } from "@/lib/parseStatement"
 import type { CategorizedTransaction, RawTransaction } from "@/lib/types"
 import { Upload, FileText, Sparkles, Trash2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -77,9 +77,10 @@ export function UploadSection() {
     }
   }
 
-  async function loadDemo() {
+  function loadDemo() {
     const raw = generateMockTransactions()
-    await processTransactions(raw)
+    const categorized = categorizeOffline(raw)
+    setTransactions(categorized)
   }
 
   return (
@@ -168,14 +169,13 @@ export function UploadSection() {
           <Button
             variant="outline"
             onClick={loadDemo}
-            disabled={loading}
             className="gap-2 border-0 bg-lime hover:bg-lime-dark text-forest font-semibold px-6 py-3 shadow-sm transition-all duration-200"
           >
             <Sparkles className="h-4 w-4" />
-            {loading ? "Loading…" : "Try with demo data"}
+            Try with demo data
           </Button>
           <p className="mt-3 text-sm text-muted-foreground">
-            ✨ 20 realistic Canadian transactions, no upload needed
+            ✨ 20 realistic Canadian transactions — instant, no API needed
           </p>
         </div>
       )}
