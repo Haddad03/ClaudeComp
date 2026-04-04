@@ -13,6 +13,7 @@ import {
   Sparkles,
   PiggyBank,
   Shield,
+  MessageCircle,
 } from "lucide-react"
 
 const quickActions = [
@@ -154,6 +155,21 @@ export function HomePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Assistant promo */}
+      <div className="flex items-center gap-4 rounded-2xl border border-forest/20 bg-forest/5 px-6 py-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-forest text-lime shadow-sm">
+          <MessageCircle className="h-6 w-6" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-forest">Have a money question?</p>
+          <p className="text-sm text-muted-foreground">Ask our AI assistant — TFSA, RRSP, budgeting, taxes, and more. Simple answers, instantly.</p>
+        </div>
+        <div className="shrink-0 flex items-center gap-1.5 text-sm font-semibold text-forest">
+          <span>Chat now</span>
+          <ArrowRight className="h-4 w-4" />
+        </div>
+      </div>
 
       {/* Tips section */}
       <div>
