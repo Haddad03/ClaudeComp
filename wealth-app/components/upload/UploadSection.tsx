@@ -85,18 +85,18 @@ export function UploadSection() {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold text-forest">
           Upload Statement
         </h1>
-        <p className="text-lg text-slate-400">
+        <p className="text-lg text-muted-foreground">
           Upload a CSV or PDF statement to analyze your spending and get AI insights
         </p>
       </div>
 
       {error && (
         <Alert className="border-red-500/30 bg-red-500/10">
-          <AlertCircle className="h-4 w-4 text-red-400" />
-          <AlertDescription className="text-red-300">{error}</AlertDescription>
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-600">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -104,10 +104,10 @@ export function UploadSection() {
       {transactions.length === 0 && (
         <Card
           className={cn(
-            "cursor-pointer border-2 border-dashed bg-gradient-to-br transition-all duration-300",
+            "cursor-pointer border-2 border-dashed transition-all duration-300",
             dragging
-              ? "border-violet-500 from-violet-600/20 to-violet-600/5 shadow-lg shadow-violet-500/20"
-              : "border-[--border] from-slate-600/5 to-slate-500/5 hover:border-violet-500/50 hover:shadow-md hover:shadow-violet-500/10"
+              ? "border-lime bg-lime/10 shadow-md"
+              : "border-[--border] bg-card hover:border-forest/30 hover:shadow-sm"
           )}
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
@@ -122,21 +122,21 @@ export function UploadSection() {
           <CardContent className="flex flex-col items-center gap-4 py-20">
             <div className={cn(
               "flex h-20 w-20 items-center justify-center rounded-2xl transition-all duration-300",
-              dragging ? "bg-violet-600/30 scale-110" : "bg-violet-600/20"
+              dragging ? "bg-forest/80 scale-110" : "bg-forest"
             )}>
               <Upload className={cn(
                 "h-10 w-10 transition-all duration-300",
-                dragging ? "text-violet-300 scale-110" : "text-violet-400"
+                dragging ? "text-lime scale-110" : "text-lime"
               )} />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-white text-lg">
+              <p className="font-semibold text-forest text-lg">
                 {dragging ? "Drop your file here..." : "Drag & drop your statement here"}
               </p>
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-muted-foreground">
                 or click to browse (CSV or PDF)
               </p>
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-muted-foreground">
                 💡 Supports TD, RBC, BMO, Scotiabank, CIBC and others
               </p>
             </div>
@@ -157,9 +157,9 @@ export function UploadSection() {
       {/* Demo button */}
       {transactions.length === 0 && (
         <div className="flex items-center gap-4">
-          <div className="h-px flex-1 bg-gradient-to-r from-[--border] to-transparent" />
-          <span className="text-sm font-medium text-slate-500">or try demo</span>
-          <div className="h-px flex-1 bg-gradient-to-l from-[--border] to-transparent" />
+          <div className="h-px flex-1 bg-[--border]" />
+          <span className="text-sm font-medium text-muted-foreground">or try demo</span>
+          <div className="h-px flex-1 bg-[--border]" />
         </div>
       )}
 
@@ -169,12 +169,12 @@ export function UploadSection() {
             variant="outline"
             onClick={loadDemo}
             disabled={loading}
-            className="gap-2 border-0 bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white font-semibold px-6 py-3 shadow-lg shadow-violet-500/30 hover:shadow-lg hover:shadow-violet-500/50 transition-all duration-200"
+            className="gap-2 border-0 bg-lime hover:bg-lime-dark text-forest font-semibold px-6 py-3 shadow-sm transition-all duration-200"
           >
             <Sparkles className="h-4 w-4" />
             {loading ? "Loading…" : "Try with demo data"}
           </Button>
-          <p className="mt-3 text-sm text-slate-400">
+          <p className="mt-3 text-sm text-muted-foreground">
             ✨ 20 realistic Canadian transactions, no upload needed
           </p>
         </div>
@@ -182,11 +182,11 @@ export function UploadSection() {
 
       {/* Results */}
       {(transactions.length > 0 || loading) && (
-        <Card className="border-[--border] bg-[--card]">
+        <Card className="border-[--border] bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-base text-white">
-                <FileText className="h-4 w-4 text-violet-400" />
+              <CardTitle className="flex items-center gap-2 text-base text-forest">
+                <FileText className="h-4 w-4 text-forest" />
                 {loading
                   ? "Categorising with Claude AI…"
                   : `${transactions.length} Transactions`}
@@ -197,7 +197,7 @@ export function UploadSection() {
                     <Button
                       size="sm"
                       onClick={() => setActiveTab("dashboard")}
-                      className="bg-violet-600 hover:bg-violet-700 text-xs"
+                      className="bg-lime text-forest hover:bg-lime-dark text-xs font-semibold"
                     >
                       View Dashboard
                     </Button>
@@ -205,7 +205,7 @@ export function UploadSection() {
                       size="sm"
                       variant="outline"
                       onClick={clearTransactions}
-                      className="gap-1 border-slate-700 text-slate-400 hover:bg-slate-800 text-xs"
+                      className="gap-1 border-[--border] text-muted-foreground hover:bg-cream-dark text-xs"
                     >
                       <Trash2 className="h-3 w-3" />
                       Clear

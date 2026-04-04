@@ -13,22 +13,22 @@ export function DashboardShell() {
   if (transactions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
-        {/* Gradient hero */}
+        {/* Hero icon */}
         <div className="relative">
-          <div className="absolute -inset-20 rounded-full bg-violet-600/10 blur-3xl" />
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-violet-600/20 ring-1 ring-violet-500/30">
-            <TrendingUp className="h-10 w-10 text-violet-400" />
+          <div className="absolute -inset-20 rounded-full bg-lime/10 blur-3xl" />
+          <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-forest shadow-lg">
+            <TrendingUp className="h-10 w-10 text-lime" />
           </div>
         </div>
 
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-white">
+          <h1 className="text-4xl font-bold tracking-tight text-forest">
             Your money,{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-lime px-2 rounded-lg text-forest">
               finally clear
             </span>
           </h1>
-          <p className="mt-3 max-w-md text-slate-400">
+          <p className="mt-3 max-w-md text-muted-foreground">
             Upload a bank statement to get AI-powered spending insights, tax
             tips, and a personalised savings plan — no $1M required.
           </p>
@@ -37,7 +37,7 @@ export function DashboardShell() {
         <div className="flex gap-3">
           <Button
             onClick={() => setActiveTab("upload")}
-            className="gap-2 bg-violet-600 hover:bg-violet-700"
+            className="gap-2 bg-lime text-forest hover:bg-lime-dark font-semibold shadow-sm"
           >
             <Upload className="h-4 w-4" />
             Upload Statement
@@ -45,7 +45,7 @@ export function DashboardShell() {
           <Button
             variant="outline"
             onClick={() => setActiveTab("tax")}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="border-[--border] text-forest hover:bg-cream-dark"
           >
             Try Tax Simulator
           </Button>
@@ -72,11 +72,11 @@ export function DashboardShell() {
           ].map((f) => (
             <div
               key={f.title}
-              className="rounded-xl border border-[--border] bg-[--card] p-4 text-left"
+              className="rounded-2xl border border-[--border] bg-card p-4 text-left hover:border-forest/20 hover:shadow-sm transition-all duration-300"
             >
               <div className="mb-2 text-2xl">{f.icon}</div>
-              <div className="font-semibold text-white">{f.title}</div>
-              <div className="mt-1 text-sm text-slate-400">{f.desc}</div>
+              <div className="font-semibold text-forest">{f.title}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{f.desc}</div>
             </div>
           ))}
         </div>
@@ -87,10 +87,10 @@ export function DashboardShell() {
   return (
     <div className="space-y-8">
       <div className="space-y-3">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold text-forest">
           Your Financial Dashboard
         </h1>
-        <p className="text-lg text-slate-400">
+        <p className="text-lg text-muted-foreground">
           {transactions.length} transactions analysed • AI-powered insights
         </p>
       </div>

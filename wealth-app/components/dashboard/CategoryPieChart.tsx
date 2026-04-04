@@ -38,11 +38,11 @@ export function CategoryPieChart() {
     if (active && payload?.length) {
       const cat = payload[0].name as TransactionCategory
       return (
-        <div className="rounded-lg border border-[--border] bg-[--card] p-3 text-sm shadow-xl">
-          <p className="font-medium text-white">
+        <div className="rounded-xl border border-[--border] bg-card p-3 text-sm shadow-md">
+          <p className="font-medium text-forest">
             {CATEGORY_EMOJIS[cat]} {cat}
           </p>
-          <p className="text-slate-400">${payload[0].value.toFixed(2)}</p>
+          <p className="text-muted-foreground">${payload[0].value.toFixed(2)}</p>
         </div>
       )
     }
@@ -50,9 +50,9 @@ export function CategoryPieChart() {
   }
 
   return (
-    <Card className="border-[--border] bg-[--card]">
+    <Card className="border-[--border] bg-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base text-white">Spending by Category</CardTitle>
+        <CardTitle className="text-base text-forest">Spending by Category</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={280}>
@@ -71,7 +71,7 @@ export function CategoryPieChart() {
                   key={entry.name}
                   fill={
                     CATEGORY_COLORS[entry.name as TransactionCategory] ??
-                    "#64748b"
+                    "#94a3b8"
                   }
                 />
               ))}
@@ -81,7 +81,7 @@ export function CategoryPieChart() {
               formatter={(value) =>
                 `${CATEGORY_EMOJIS[value as TransactionCategory] ?? ""} ${value}`
               }
-              wrapperStyle={{ fontSize: "12px", color: "#94a3b8" }}
+              wrapperStyle={{ fontSize: "12px", color: "oklch(0.52 0.03 145)" }}
             />
           </PieChart>
         </ResponsiveContainer>

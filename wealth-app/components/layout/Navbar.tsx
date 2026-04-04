@@ -9,6 +9,8 @@ import {
   BookOpen,
   LineChart,
   Shield,
+  Sun,
+  Moon,
 } from "lucide-react"
 
 const tabs = [
@@ -21,22 +23,22 @@ const tabs = [
 ]
 
 export function Navbar() {
-  const { activeTab, setActiveTab, hasOnboarded } = useAppStore()
+  const { activeTab, setActiveTab, hasOnboarded, theme, setTheme } = useAppStore()
 
   if (!hasOnboarded) return null
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[--border] bg-gradient-to-r from-[--background] via-[--background] to-violet-600/10 bg-[--background]/80 backdrop-blur-md shadow-lg shadow-violet-500/5">
+    <nav className="sticky top-0 z-50 border-b border-[--border] bg-card shadow-sm">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="flex items-center justify-between py-5">
+        <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-violet-700 shadow-lg shadow-violet-500/30">
-              <TrendingUp className="h-5 w-5 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-forest shadow-sm">
+              <TrendingUp className="h-5 w-5 text-lime" />
             </div>
             <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">WealthWise</span>
-              <p className="text-xs text-slate-500">Financial Dashboard</p>
+              <span className="text-xl font-bold text-forest">WealthWise</span>
+              <p className="text-xs text-muted-foreground">Financial Dashboard</p>
             </div>
           </div>
 
@@ -47,10 +49,10 @@ export function Navbar() {
                 key={id}
                 onClick={() => setActiveTab(id)}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
                   activeTab === id
-                    ? "bg-violet-600/20 text-violet-300 border border-violet-500/30 shadow-lg shadow-violet-500/10"
-                    : "text-slate-400 hover:bg-white/5 hover:text-slate-300"
+                    ? "bg-lime text-forest shadow-sm"
+                    : "text-muted-foreground hover:bg-cream-dark hover:text-forest"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -59,14 +61,30 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Mobile menu toggle — just show icon for mobile */}
-          <div className="sm:hidden flex items-center gap-2">
-            {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
-              <div key={label} className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-violet-400" />
-                <span className="text-sm text-white">{label}</span>
-              </div>
-            ))}
+          {/* Right side: theme toggle + mobile active tab */}
+          <div className="flex items-center gap-3">
+            {/* Mobile: show active tab label */}
+            <div className="sm:hidden flex items-center gap-2">
+              {tabs.filter(t => activeTab === t.id).map(({ label, icon: Icon }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-forest" />
+                  <span className="text-sm font-medium text-forest">{label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Theme toggle */}
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[--border] bg-card text-muted-foreground hover:bg-cream-dark hover:text-forest transition-all duration-200"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </button>
           </div>
         </div>
       </div>

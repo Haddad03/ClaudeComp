@@ -22,33 +22,33 @@ export function TransactionTable({ transactions, loading }: Props) {
     return (
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full bg-slate-700/50 rounded-lg" />
+          <Skeleton key={i} className="h-12 w-full bg-cream-dark rounded-xl" />
         ))}
       </div>
     )
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[--border] bg-gradient-to-b from-slate-950/50 to-slate-950/20">
+    <div className="overflow-x-auto rounded-2xl border border-[--border] bg-card">
       <Table>
         <TableHeader>
-          <TableRow className="border-[--border] hover:bg-transparent bg-slate-900/50">
-            <TableHead className="text-violet-400 font-semibold">Date</TableHead>
-            <TableHead className="text-violet-400 font-semibold">Description</TableHead>
-            <TableHead className="text-right text-violet-400 font-semibold">Amount</TableHead>
-            <TableHead className="text-violet-400 font-semibold">Category</TableHead>
-            <TableHead className="text-right text-violet-400 font-semibold">Confidence</TableHead>
+          <TableRow className="border-[--border] hover:bg-transparent bg-cream-dark">
+            <TableHead className="text-forest font-semibold">Date</TableHead>
+            <TableHead className="text-forest font-semibold">Description</TableHead>
+            <TableHead className="text-right text-forest font-semibold">Amount</TableHead>
+            <TableHead className="text-forest font-semibold">Category</TableHead>
+            <TableHead className="text-right text-forest font-semibold">Confidence</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((tx, idx) => (
+          {transactions.map((tx) => (
             <TableRow
               key={tx.id}
-              className="border-[--border] hover:bg-white/5 transition-colors duration-200 even:bg-white/2"
+              className="border-[--border] hover:bg-cream-dark transition-colors duration-200"
             >
-              <TableCell className="text-slate-400 text-sm font-medium">{tx.date || "—"}</TableCell>
-              <TableCell className="max-w-[200px] truncate text-white text-sm">{tx.description}</TableCell>
-              <TableCell className="text-right font-mono text-emerald-400 text-sm font-semibold">
+              <TableCell className="text-muted-foreground text-sm font-medium">{tx.date || "—"}</TableCell>
+              <TableCell className="max-w-[200px] truncate text-forest text-sm">{tx.description}</TableCell>
+              <TableCell className="text-right font-mono text-emerald-600 text-sm font-semibold">
                 ${tx.amount.toFixed(2)}
               </TableCell>
               <TableCell>
@@ -56,9 +56,9 @@ export function TransactionTable({ transactions, loading }: Props) {
               </TableCell>
               <TableCell className="text-right text-xs">
                 <span className={`font-semibold ${
-                  Math.round(tx.confidence * 100) >= 90 ? "text-emerald-400" :
-                  Math.round(tx.confidence * 100) >= 70 ? "text-yellow-400" :
-                  "text-slate-400"
+                  Math.round(tx.confidence * 100) >= 90 ? "text-emerald-600" :
+                  Math.round(tx.confidence * 100) >= 70 ? "text-amber-600" :
+                  "text-muted-foreground"
                 }`}>
                   {Math.round(tx.confidence * 100)}%
                 </span>

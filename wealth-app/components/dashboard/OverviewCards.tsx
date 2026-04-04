@@ -2,7 +2,6 @@
 
 import { useAppStore } from "@/store/appStore"
 import { Card, CardContent } from "@/components/ui/card"
-import { CATEGORY_COLORS } from "@/lib/categories"
 import type { CategorizedTransaction, CategorySummary } from "@/lib/types"
 import { DollarSign, TrendingUp, Activity, Zap } from "lucide-react"
 
@@ -43,37 +42,25 @@ export function OverviewCards() {
       label: "Total Spending",
       value: `$${grandTotal.toFixed(2)}`,
       sub: `${transactions.length} transactions`,
-      color: "text-violet-400",
       icon: DollarSign,
-      bgGradient: "from-violet-600/20 to-violet-600/5",
-      borderColor: "border-violet-500/20",
     },
     {
       label: "Largest Category",
       value: topCategory?.category ?? "—",
       sub: topCategory ? `$${topCategory.total.toFixed(2)}` : "",
-      color: "text-emerald-400",
       icon: TrendingUp,
-      bgGradient: "from-emerald-600/20 to-emerald-600/5",
-      borderColor: "border-emerald-500/20",
     },
     {
       label: "Avg per Transaction",
       value: `$${avgPerTx.toFixed(2)}`,
       sub: "per purchase",
-      color: "text-cyan-400",
       icon: Zap,
-      bgGradient: "from-cyan-600/20 to-cyan-600/5",
-      borderColor: "border-cyan-500/20",
     },
     {
       label: "Categories Found",
       value: summaries.length.toString(),
       sub: "spending types",
-      color: "text-blue-400",
       icon: Activity,
-      bgGradient: "from-blue-600/20 to-blue-600/5",
-      borderColor: "border-blue-500/20",
     },
   ]
 
@@ -82,16 +69,16 @@ export function OverviewCards() {
       {stats.map((s) => {
         const Icon = s.icon
         return (
-          <Card key={s.label} className={`border-[--border] bg-gradient-to-br ${s.bgGradient} hover:border-violet-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/10`}>
+          <Card key={s.label} className="border-[--border] bg-card hover:shadow-md transition-all duration-300">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-400">{s.label}</p>
-                  <p className={`mt-2 text-3xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="mt-1 text-xs text-slate-500">{s.sub}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{s.label}</p>
+                  <p className="mt-2 text-3xl font-bold text-forest">{s.value}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{s.sub}</p>
                 </div>
-                <div className={`rounded-lg p-2.5 bg-${s.color.split('-')[1]}-500/10`}>
-                  <Icon className={`h-5 w-5 ${s.color}`} />
+                <div className="rounded-xl p-2.5 bg-forest">
+                  <Icon className="h-5 w-5 text-lime" />
                 </div>
               </div>
             </CardContent>
