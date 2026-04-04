@@ -70,7 +70,7 @@ export function TermsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-base text-foreground leading-relaxed">
-          WealthWise was built to help everyday Canadians — especially young people who don't have $1 million — understand their finances better. We believe financial literacy should be accessible to everyone. We are students building a free educational tool at a hackathon, not a regulated financial services company.
+          WealthWise was built to help everyday Canadians — especially young people who don't have a substantial amount of money — understand their finances better. We believe financial literacy should be accessible to everyone. We are students building a free educational tool at a hackathon, not a regulated financial services company.
         </CardContent>
       </Card>
 
