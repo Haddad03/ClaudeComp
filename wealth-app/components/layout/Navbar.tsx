@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useAppStore } from "@/store/appStore"
 import {
+  Home,
   TrendingUp,
   Upload,
   Calculator,
@@ -14,12 +15,13 @@ import {
 } from "lucide-react"
 
 const tabs = [
+  { id: "home", label: "Home", icon: Home },
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
-  { id: "upload", label: "Upload Statement", icon: Upload },
-  { id: "growth", label: "Growth Projection", icon: LineChart },
-  { id: "accounts", label: "Learn Accounts", icon: BookOpen },
-  { id: "tax", label: "Tax Simulator", icon: Calculator },
-  { id: "terms", label: "Terms & Disclaimer", icon: Shield },
+  { id: "upload", label: "Upload", icon: Upload },
+  { id: "growth", label: "Growth", icon: LineChart },
+  { id: "accounts", label: "Accounts", icon: BookOpen },
+  { id: "tax", label: "Tax Sim", icon: Calculator },
+  { id: "terms", label: "Terms", icon: Shield },
 ]
 
 export function Navbar() {

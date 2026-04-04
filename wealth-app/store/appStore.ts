@@ -32,7 +32,7 @@ export const useAppStore = create<AppStore>()(
       transactions: [],
       suggestions: [],
       taxResult: null,
-      activeTab: "dashboard",
+      activeTab: "home",
       hasOnboarded: false,
       userGoal: null,
       theme: "light",
@@ -43,7 +43,7 @@ export const useAppStore = create<AppStore>()(
       clearTransactions: () =>
         set({ transactions: [], suggestions: [] }),
       completeOnboarding: (goal) =>
-        set({ hasOnboarded: true, userGoal: goal, activeTab: "dashboard" }),
+        set({ hasOnboarded: true, userGoal: goal, activeTab: "home" }),
       resetOnboarding: () =>
         set({ hasOnboarded: false, userGoal: null }),
       setTheme: (theme) => set({ theme }),
