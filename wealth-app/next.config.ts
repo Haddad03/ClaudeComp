@@ -1,13 +1,16 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === "production";
+// Set STATIC_EXPORT=true in GitHub Actions for GitHub Pages deployment.
+// Vercel deployments leave this unset so API routes (AI features) work.
+const isStaticExport = process.env.STATIC_EXPORT === "true";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath: isProd ? "/ClaudeComp" : "",
-  assetPrefix: isProd ? "/ClaudeComp/" : "",
+  ...(isStaticExport && {
+    output: "export",
+    basePath: "/ClaudeComp",
+    assetPrefix: "/ClaudeComp/",
+  }),
   images: { unoptimized: true },
-  // API routes are excluded from static export automatically
 };
 
 export default nextConfig;

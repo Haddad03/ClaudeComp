@@ -32,6 +32,8 @@ jobs:
 
       - name: Build static export
         working-directory: wealth-app
+        env:
+          STATIC_EXPORT: "true"
         run: npm run build
 
       - name: Upload Pages artifact
