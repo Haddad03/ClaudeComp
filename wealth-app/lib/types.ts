@@ -1,15 +1,3 @@
-// Auth / subscription
-export interface AppUser {
-  id: string
-  username: string
-  email: string
-  password: string        // plaintext — demo only, not for production
-  isSubscribed: boolean
-  hasUsedFreeUpload: boolean
-  termsAccepted: boolean
-  createdAt: string
-}
-
 // Transaction types
 export interface RawTransaction {
   id: string

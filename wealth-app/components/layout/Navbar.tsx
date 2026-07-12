@@ -11,8 +11,6 @@ import {
   LineChart,
   Shield,
   History,
-  LogOut,
-  Crown,
   MoreHorizontal,
 } from "lucide-react"
 import { useState } from "react"
@@ -32,7 +30,7 @@ const tabs = [
 const MOBILE_PRIMARY = ["home", "dashboard", "upload", "growth"]
 
 export function Navbar() {
-  const { activeTab, setActiveTab, hasOnboarded, currentUser, logout } = useAppStore()
+  const { activeTab, setActiveTab, hasOnboarded } = useAppStore()
   const [moreOpen, setMoreOpen] = useState(false)
 
   if (!hasOnboarded) return null
@@ -75,46 +73,6 @@ export function Navbar() {
                   {label}
                 </button>
               ))}
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center gap-2">
-              {/* Desktop user badge */}
-              {currentUser && (
-                <div className="hidden sm:flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 rounded-xl bg-[--secondary] px-3 py-1.5">
-                    {(currentUser.isSubscribed || currentUser.id === "admin") && (
-                      <Crown className="h-3.5 w-3.5 text-amber-500" />
-                    )}
-                    <span className="text-sm font-medium text-foreground">{currentUser.username}</span>
-                    {!currentUser.isSubscribed && currentUser.id !== "admin" && (
-                      <span className="text-xs text-muted-foreground">· Free</span>
-                    )}
-                  </div>
-                  <button
-                    onClick={logout}
-                    title="Log out"
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[--border] bg-card text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Mobile: user initial + logout */}
-              {currentUser && (
-                <div className="sm:hidden flex items-center gap-2">
-                  {(currentUser.isSubscribed || currentUser.id === "admin") && (
-                    <Crown className="h-4 w-4 text-amber-500" />
-                  )}
-                  <button
-                    onClick={logout}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[--border] bg-card text-muted-foreground"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>

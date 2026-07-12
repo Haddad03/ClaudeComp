@@ -45,11 +45,12 @@ export async function POST(request: Request) {
     }
 
     const batchSize = 20
-    const allCategorized: CategorizedTransaction[] = []
-
+    const batches: RawTransaction[][] = []
     for (let i = 0; i < transactions.length; i += batchSize) {
-      const batch = transactions.slice(i, i + batchSize)
+      batches.push(transactions.slice(i, i + batchSize))
+    }
 
+    const results = await Promise.all(batches.map(async (batch) => {
       const message = await anthropic.messages.create({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 2048,
@@ -77,17 +78,17 @@ export async function POST(request: Request) {
 
       const categoryMap = new Map(parsed.map((p) => [p.id, p]))
 
-      for (const tx of batch) {
+      return batch.map((tx): CategorizedTransaction => {
         const cat = categoryMap.get(tx.id)
-        allCategorized.push({
+        return {
           ...tx,
           category: cat?.category ? resolveCategory(cat.category) : "Other",
           confidence: cat?.confidence ?? 0.5,
-        })
-      }
-    }
+        }
+      })
+    }))
 
-    return Response.json(allCategorized)
+    return Response.json(results.flat())
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error("Categorize error:", msg)
