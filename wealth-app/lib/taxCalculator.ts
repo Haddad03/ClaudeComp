@@ -1,4 +1,4 @@
-import type { TaxResult } from "./types"
+import type { TaxResult, IncomeSource, IncomeSourceType } from "./types"
 
 interface TaxBracket {
   min: number
@@ -110,15 +110,146 @@ function applyBrackets(income: number, brackets: TaxBracket[]): number {
   }, 0)
 }
 
-function getMarginalRate(taxableIncome: number, province: string): number {
+function getMarginalRate(
+  federalTaxable: number,
+  provincialTaxable: number,
+  province: string
+): number {
   const brackets = PROVINCIAL_BRACKETS[province] ?? PROVINCIAL_BRACKETS.ON
   const fedBracket = FEDERAL_BRACKETS.find(
-    (b) => taxableIncome >= b.min && taxableIncome < b.max
+    (b) => federalTaxable >= b.min && federalTaxable < b.max
   )
   const provBracket = brackets.find(
-    (b) => taxableIncome >= b.min && taxableIncome < b.max
+    (b) => provincialTaxable >= b.min && provincialTaxable < b.max
   )
   return (fedBracket?.rate ?? 0) + (provBracket?.rate ?? 0)
+}
+
+// 2025 contribution limits
+export const FHSA_ANNUAL_LIMIT = 8000
+export const TFSA_ANNUAL_LIMIT = 7000
+export const RRSP_ANNUAL_MAX = 32490
+export const RRSP_EARNED_INCOME_RATE = 0.18
+
+// CPP: 5.95% employee (11.9% self-employed) on pensionable earnings
+// between the $3,500 exemption and the $68,500 ceiling
+const CPP_EXEMPTION = 3500
+const CPP_PENSIONABLE_CAP = 65000
+const CPP_EMPLOYEE_RATE = 0.0595
+const CPP_SELF_EMPLOYED_RATE = 0.119
+
+// EI: 1.66% on insurable employment earnings up to $63,200
+const EI_MAX_INSURABLE = 63200
+const EI_RATE = 0.0166
+
+// Quebec residents get a 16.5% abatement of basic federal tax
+const QC_FEDERAL_ABATEMENT = 0.165
+
+export const INCOME_SOURCE_TYPES: {
+  value: IncomeSourceType
+  label: string
+  hint: string
+}[] = [
+  { value: "employment", label: "Employment (T4)", hint: "Salary or wages — CPP and EI apply" },
+  { value: "selfEmployment", label: "Self-employment", hint: "Freelance or business — you pay both CPP halves, no EI" },
+  { value: "capitalGains", label: "Capital gains", hint: "Only 50% is taxable" },
+  { value: "other", label: "Other income", hint: "Interest, rental, etc. — fully taxable, no CPP/EI" },
+]
+
+function sumByType(sources: IncomeSource[], type: IncomeSourceType): number {
+  return sources
+    .filter((s) => s.type === type)
+    .reduce((sum, s) => sum + Math.max(0, s.amount), 0)
+}
+
+function incomeTax(
+  taxBase: number,
+  deductions: number,
+  province: string
+): { federalTax: number; provincialTax: number; federalTaxable: number; provincialTaxable: number } {
+  const provBPA = PROVINCIAL_BPA[province] ?? 15705
+  const federalTaxable = Math.max(0, taxBase - deductions - FEDERAL_BPA)
+  const provincialTaxable = Math.max(0, taxBase - deductions - provBPA)
+
+  let federalTax = applyBrackets(federalTaxable, FEDERAL_BRACKETS)
+  if (province === "QC") federalTax *= 1 - QC_FEDERAL_ABATEMENT
+
+  const provincialTax = applyBrackets(
+    provincialTaxable,
+    PROVINCIAL_BRACKETS[province] ?? PROVINCIAL_BRACKETS.ON
+  )
+  return { federalTax, provincialTax, federalTaxable, provincialTaxable }
+}
+
+export function calculateTaxFromSources(
+  sources: IncomeSource[],
+  province: string,
+  deductions: { rrsp: number; fhsa: number } = { rrsp: 0, fhsa: 0 }
+): TaxResult {
+  const employment = sumByType(sources, "employment")
+  const selfEmployment = sumByType(sources, "selfEmployment")
+  const capitalGains = sumByType(sources, "capitalGains")
+  const other = sumByType(sources, "other")
+
+  const grossIncome = employment + selfEmployment + capitalGains + other
+  // Only 50% of capital gains are taxable
+  const taxBase = employment + selfEmployment + other + capitalGains * 0.5
+
+  const rrsp = Math.max(0, deductions.rrsp)
+  const fhsa = Math.min(Math.max(0, deductions.fhsa), FHSA_ANNUAL_LIMIT)
+  const totalDeductions = rrsp + fhsa
+
+  const withDeductions = incomeTax(taxBase, totalDeductions, province)
+  const withoutDeductions = incomeTax(taxBase, 0, province)
+
+  // CPP: employment pensionable earnings use up the exemption and cap first,
+  // self-employment fills the remaining room at the doubled rate
+  const empPensionable = Math.min(
+    Math.max(employment - CPP_EXEMPTION, 0),
+    CPP_PENSIONABLE_CAP
+  )
+  const exemptionLeft = Math.max(CPP_EXEMPTION - employment, 0)
+  const sePensionable = Math.min(
+    Math.max(selfEmployment - exemptionLeft, 0),
+    Math.max(CPP_PENSIONABLE_CAP - empPensionable, 0)
+  )
+  const cppContribution =
+    empPensionable * CPP_EMPLOYEE_RATE + sePensionable * CPP_SELF_EMPLOYED_RATE
+
+  const eiPremium = Math.min(employment, EI_MAX_INSURABLE) * EI_RATE
+
+  const totalTax =
+    withDeductions.federalTax +
+    withDeductions.provincialTax +
+    cppContribution +
+    eiPremium
+  const netIncome = grossIncome - totalTax
+  const effectiveRate = grossIncome > 0 ? totalTax / grossIncome : 0
+
+  const deductionSavings = Math.max(
+    0,
+    withoutDeductions.federalTax +
+      withoutDeductions.provincialTax -
+      (withDeductions.federalTax + withDeductions.provincialTax)
+  )
+
+  return {
+    grossIncome,
+    taxableIncome: Math.max(0, taxBase - totalDeductions),
+    federalTax: withDeductions.federalTax,
+    provincialTax: withDeductions.provincialTax,
+    cppContribution,
+    eiPremium,
+    totalTax,
+    netIncome,
+    effectiveRate,
+    marginalRate: getMarginalRate(
+      withDeductions.federalTaxable,
+      withDeductions.provincialTaxable,
+      province
+    ),
+    deductionSavings,
+  }
 }
 
 export function calculateTax(
@@ -126,58 +257,11 @@ export function calculateTax(
   province: string,
   rrspContribution: number = 0
 ): TaxResult {
-  const provBPA = PROVINCIAL_BPA[province] ?? 15705
-  const federalTaxableIncome = Math.max(
-    0,
-    income - rrspContribution - FEDERAL_BPA
+  return calculateTaxFromSources(
+    [{ id: "income", type: "employment", amount: income }],
+    province,
+    { rrsp: rrspContribution, fhsa: 0 }
   )
-  const provincialTaxableIncome = Math.max(
-    0,
-    income - rrspContribution - provBPA
-  )
-
-  const federalTax = applyBrackets(
-    federalTaxableIncome,
-    FEDERAL_BRACKETS
-  )
-  const provincialTax = applyBrackets(
-    provincialTaxableIncome,
-    PROVINCIAL_BRACKETS[province] ?? PROVINCIAL_BRACKETS.ON
-  )
-
-  // CPP: 5.95% on earnings between $3,500 and $68,500
-  const cppContribution =
-    Math.min(Math.max(income - 3500, 0), 65000) * 0.0595
-
-  // EI: 1.66% on earnings up to $63,200
-  const eiPremium = Math.min(income, 63200) * 0.0166
-
-  const totalTax = federalTax + provincialTax + cppContribution + eiPremium
-  const netIncome = income - totalTax
-  const effectiveRate = income > 0 ? totalTax / income : 0
-
-  // RRSP tax savings = tax without RRSP minus tax with RRSP
-  const taxWithoutRRSP =
-    applyBrackets(Math.max(0, income - FEDERAL_BPA), FEDERAL_BRACKETS) +
-    applyBrackets(
-      Math.max(0, income - provBPA),
-      PROVINCIAL_BRACKETS[province] ?? PROVINCIAL_BRACKETS.ON
-    )
-  const rrspSavings = Math.max(0, taxWithoutRRSP - (federalTax + provincialTax))
-
-  return {
-    grossIncome: income,
-    taxableIncome: income - rrspContribution,
-    federalTax,
-    provincialTax,
-    cppContribution,
-    eiPremium,
-    totalTax,
-    netIncome,
-    effectiveRate,
-    marginalRate: getMarginalRate(federalTaxableIncome, province),
-    rrspSavings,
-  }
 }
 
 export const PROVINCES: { value: string; label: string }[] = [

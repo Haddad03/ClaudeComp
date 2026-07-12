@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -22,8 +23,17 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { calculateTax, PROVINCES } from "@/lib/taxCalculator"
-import { Info } from "lucide-react"
+import {
+  calculateTaxFromSources,
+  PROVINCES,
+  INCOME_SOURCE_TYPES,
+  FHSA_ANNUAL_LIMIT,
+  TFSA_ANNUAL_LIMIT,
+  RRSP_ANNUAL_MAX,
+  RRSP_EARNED_INCOME_RATE,
+} from "@/lib/taxCalculator"
+import type { IncomeSource, IncomeSourceType } from "@/lib/types"
+import { Info, Plus, Trash2 } from "lucide-react"
 
 function fmt(n: number) {
   return `$${Math.round(n).toLocaleString("en-CA")}`
@@ -33,114 +43,225 @@ function pct(n: number) {
 }
 
 export function TaxSimulator() {
-  const [income, setIncome] = useState(75000)
+  const [sources, setSources] = useState<IncomeSource[]>([
+    { id: "src-1", type: "employment", amount: 75000 },
+  ])
   const [province, setProvince] = useState("ON")
   const [rrsp, setRrsp] = useState(0)
+  const [fhsa, setFhsa] = useState(0)
+  const [tfsa, setTfsa] = useState(0)
 
-  const withRRSP = calculateTax(income, province, rrsp)
-  const withoutRRSP = calculateTax(income, province, 0)
+  const fhsaApplied = Math.min(fhsa, FHSA_ANNUAL_LIMIT)
+  const withAccounts = calculateTaxFromSources(sources, province, { rrsp, fhsa: fhsaApplied })
+  const withoutAccounts = calculateTaxFromSources(sources, province)
+
+  const earnedIncome = sources
+    .filter((s) => s.type === "employment" || s.type === "selfEmployment")
+    .reduce((sum, s) => sum + Math.max(0, s.amount), 0)
+  const rrspRoom = Math.min(earnedIncome * RRSP_EARNED_INCOME_RATE, RRSP_ANNUAL_MAX)
+
+  const hasDeductions = rrsp + fhsaApplied > 0
+  const totalIncome = withAccounts.grossIncome
+
+  function updateSource(id: string, patch: Partial<IncomeSource>) {
+    setSources((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)))
+  }
+
+  function addSource() {
+    setSources((prev) => [
+      ...prev,
+      { id: `src-${Date.now()}`, type: "other", amount: 0 },
+    ])
+  }
+
+  function removeSource(id: string) {
+    setSources((prev) => (prev.length > 1 ? prev.filter((s) => s.id !== id) : prev))
+  }
 
   const chartData = [
     {
-      name: "Without RRSP",
-      Federal: Math.round(withoutRRSP.federalTax),
-      Provincial: Math.round(withoutRRSP.provincialTax),
-      "CPP + EI": Math.round(withoutRRSP.cppContribution + withoutRRSP.eiPremium),
+      name: hasDeductions ? "Without accounts" : "Your taxes",
+      Federal: Math.round(withoutAccounts.federalTax),
+      Provincial: Math.round(withoutAccounts.provincialTax),
+      "CPP + EI": Math.round(withoutAccounts.cppContribution + withoutAccounts.eiPremium),
     },
-    {
-      name: "With RRSP",
-      Federal: Math.round(withRRSP.federalTax),
-      Provincial: Math.round(withRRSP.provincialTax),
-      "CPP + EI": Math.round(withRRSP.cppContribution + withRRSP.eiPremium),
-    },
+    ...(hasDeductions
+      ? [
+          {
+            name: "With RRSP + FHSA",
+            Federal: Math.round(withAccounts.federalTax),
+            Provincial: Math.round(withAccounts.provincialTax),
+            "CPP + EI": Math.round(withAccounts.cppContribution + withAccounts.eiPremium),
+          },
+        ]
+      : []),
   ]
+
+  const numberInput = (
+    value: number,
+    onChange: (n: number) => void,
+    placeholder = "0"
+  ) => (
+    <Input
+      type="number"
+      min={0}
+      value={value === 0 ? "" : value}
+      onChange={(e) =>
+        onChange(e.target.value === "" ? 0 : Math.max(0, Number(e.target.value)))
+      }
+      className="border-[--border] bg-[--secondary] text-foreground"
+      placeholder={placeholder}
+    />
+  )
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-foreground">Tax Simulator</h2>
         <p className="text-muted-foreground">
-          Estimate your Canadian taxes and see how RRSP contributions reduce what you owe
+          Estimate your Canadian taxes across all your income, and see how registered accounts reduce what you owe
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 grid-cols-1">
         {/* Inputs */}
-        <Card className="border-[--border] bg-card lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base text-foreground">Your info</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-muted-foreground">Gross annual income (CAD)</Label>
-              <Input
-                type="number"
-                value={income}
-                onChange={(e) => setIncome(Math.max(0, Number(e.target.value)))}
-                className="border-[--border] bg-[--secondary] text-foreground"
-                placeholder="75000"
-              />
-            </div>
+        <div className="space-y-4 lg:col-span-1">
+          <Card className="border-[--border] bg-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-foreground">Income sources</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {sources.map((source) => {
+                const typeInfo = INCOME_SOURCE_TYPES.find((t) => t.value === source.type)
+                return (
+                  <div key={source.id} className="space-y-1.5 rounded-xl border border-[--border] bg-[--secondary]/40 p-3">
+                    <div className="flex items-center gap-2">
+                      <Select
+                        value={source.type}
+                        onValueChange={(v) => updateSource(source.id, { type: v as IncomeSourceType })}
+                      >
+                        <SelectTrigger className="flex-1 border-[--border] bg-[--secondary] text-foreground">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="border-[--border] bg-card">
+                          {INCOME_SOURCE_TYPES.map((t) => (
+                            <SelectItem key={t.value} value={t.value} className="text-foreground">
+                              {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {sources.length > 1 && (
+                        <button
+                          onClick={() => removeSource(source.id)}
+                          title="Remove income source"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[--border] text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-500"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    {numberInput(source.amount, (n) => updateSource(source.id, { amount: n }))}
+                    {typeInfo && (
+                      <p className="text-xs text-muted-foreground">{typeInfo.hint}</p>
+                    )}
+                  </div>
+                )
+              })}
 
-            <div className="space-y-1.5">
-              <Label className="text-muted-foreground">Province / Territory</Label>
-              <Select value={province} onValueChange={setProvince}>
-                <SelectTrigger className="border-[--border] bg-[--secondary] text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="border-[--border] bg-card">
-                  {PROVINCES.map((p) => (
-                    <SelectItem key={p.value} value={p.value} className="text-foreground">
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <Button
+                variant="outline"
+                onClick={addSource}
+                className="w-full gap-2 border-dashed border-[--border] text-muted-foreground hover:text-forest hover:bg-cream-dark"
+              >
+                <Plus className="h-4 w-4" />
+                Add income source
+              </Button>
 
-            <div className="space-y-1.5">
-              <Label className="text-muted-foreground">
-                RRSP contribution (optional)
-              </Label>
-              <Input
-                type="number"
-                value={rrsp}
-                onChange={(e) => setRrsp(Math.max(0, Number(e.target.value)))}
-                className="border-[--border] bg-[--secondary] text-foreground"
-                placeholder="0"
-              />
-              <p className="text-xs text-muted-foreground">
-                Max: {fmt(income * 0.18)} (18% of income)
-              </p>
-            </div>
+              <div className="flex justify-between border-t border-[--border] pt-2 text-sm">
+                <span className="text-muted-foreground">Total income</span>
+                <span className="font-bold text-foreground">{fmt(totalIncome)}</span>
+              </div>
 
-            {rrsp > 0 && withRRSP.rrspSavings > 0 && (
-              <div className="rounded-lg border border-emerald-600/30 bg-emerald-500/10 p-3">
-                <div className="flex items-start gap-2">
-                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                  <div>
-                    <p className="text-sm font-medium text-emerald-600">
-                      RRSP saves you {fmt(withRRSP.rrspSavings)}
-                    </p>
-                    <p className="text-xs text-emerald-600/70">
-                      in income taxes this year
-                    </p>
+              <div className="space-y-1.5 pt-1">
+                <Label className="text-muted-foreground">Province / Territory</Label>
+                <Select value={province} onValueChange={setProvince}>
+                  <SelectTrigger className="border-[--border] bg-[--secondary] text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="border-[--border] bg-card">
+                    {PROVINCES.map((p) => (
+                      <SelectItem key={p.value} value={p.value} className="text-foreground">
+                        {p.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-[--border] bg-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-foreground">Registered accounts</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-muted-foreground">RRSP contribution</Label>
+                {numberInput(rrsp, setRrsp)}
+                <p className="text-xs text-muted-foreground">
+                  Your room this year: ~{fmt(rrspRoom)} (18% of earned income)
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-muted-foreground">FHSA contribution</Label>
+                {numberInput(fhsa, setFhsa)}
+                <p className="text-xs text-muted-foreground">
+                  First Home Savings Account — annual limit {fmt(FHSA_ANNUAL_LIMIT)}
+                  {fhsa > FHSA_ANNUAL_LIMIT && (
+                    <span className="text-amber-600"> · capped at {fmt(FHSA_ANNUAL_LIMIT)}</span>
+                  )}
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-muted-foreground">TFSA contribution</Label>
+                {numberInput(tfsa, setTfsa)}
+                <p className="text-xs text-muted-foreground">
+                  Annual limit {fmt(TFSA_ANNUAL_LIMIT)} — TFSA contributions don&apos;t reduce
+                  your taxes today, but all growth and withdrawals are tax-free.
+                </p>
+              </div>
+
+              {hasDeductions && withAccounts.deductionSavings > 0 && (
+                <div className="rounded-lg border border-emerald-600/30 bg-emerald-500/10 p-3">
+                  <div className="flex items-start gap-2">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                    <div>
+                      <p className="text-sm font-medium text-emerald-600">
+                        RRSP + FHSA save you {fmt(withAccounts.deductionSavings)}
+                      </p>
+                      <p className="text-xs text-emerald-600/70">
+                        in income taxes this year
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Results */}
         <div className="space-y-4 lg:col-span-2">
           {/* Summary grid */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: "Gross income", value: fmt(income), color: "text-foreground" },
-              { label: "Total tax", value: fmt(withRRSP.totalTax), color: "text-red-600" },
-              { label: "Net income", value: fmt(withRRSP.netIncome), color: "text-emerald-600" },
-              { label: "Effective rate", value: pct(withRRSP.effectiveRate), color: "text-amber-600" },
+              { label: "Gross income", value: fmt(totalIncome), color: "text-foreground" },
+              { label: "Total tax", value: fmt(withAccounts.totalTax), color: "text-red-600" },
+              { label: "Net income", value: fmt(withAccounts.netIncome), color: "text-emerald-600" },
+              { label: "Effective rate", value: pct(withAccounts.effectiveRate), color: "text-amber-600" },
             ].map((s) => (
               <Card key={s.label} className="border-[--border] bg-card">
                 <CardContent className="p-3">
@@ -155,7 +276,7 @@ export function TaxSimulator() {
           <Card className="border-[--border] bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-base text-foreground">
-                Tax breakdown{rrsp > 0 ? " — before vs after RRSP" : ""}
+                Tax breakdown{hasDeductions ? " — before vs after RRSP + FHSA" : ""}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -169,9 +290,9 @@ export function TaxSimulator() {
                     contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "8px", color: "var(--card-foreground)" }}
                   />
                   <Legend wrapperStyle={{ fontSize: "12px", color: "var(--muted-foreground)" }} />
-                  <Bar dataKey="Federal" stackId="a" fill="#5b21b6" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="Provincial" stackId="a" fill="#1d4ed8" />
-                  <Bar dataKey="CPP + EI" stackId="a" fill="#64748b" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="Federal" stackId="a" fill="#2f9e63" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="Provincial" stackId="a" fill="#4d8fe8" />
+                  <Bar dataKey="CPP + EI" stackId="a" fill="#8a8f87" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -185,9 +306,10 @@ export function TaxSimulator() {
             <CardContent>
               <div className="space-y-2 text-sm">
                 {[
-                  { label: "Gross income", value: fmt(income) },
+                  { label: "Gross income", value: fmt(totalIncome) },
                   { label: "RRSP deduction", value: rrsp > 0 ? `-${fmt(rrsp)}` : "—", highlight: rrsp > 0 },
-                  { label: "Taxable income", value: fmt(withRRSP.taxableIncome), bold: true },
+                  { label: "FHSA deduction", value: fhsaApplied > 0 ? `-${fmt(fhsaApplied)}` : "—", highlight: fhsaApplied > 0 },
+                  { label: "Taxable income", value: fmt(withAccounts.taxableIncome), bold: true },
                 ].map((r) => (
                   <div key={r.label} className="flex justify-between border-b border-[--border] pb-1">
                     <span className="text-muted-foreground">{r.label}</span>
@@ -198,10 +320,10 @@ export function TaxSimulator() {
                 ))}
                 <Separator className="my-1 bg-[--border]" />
                 {[
-                  { label: "Federal tax", value: fmt(withRRSP.federalTax) },
-                  { label: "Provincial tax", value: fmt(withRRSP.provincialTax) },
-                  { label: "CPP contribution", value: fmt(withRRSP.cppContribution) },
-                  { label: "EI premium", value: fmt(withRRSP.eiPremium) },
+                  { label: "Federal tax", value: fmt(withAccounts.federalTax) },
+                  { label: "Provincial tax", value: fmt(withAccounts.provincialTax) },
+                  { label: "CPP contribution", value: fmt(withAccounts.cppContribution) },
+                  { label: "EI premium", value: fmt(withAccounts.eiPremium) },
                 ].map((r) => (
                   <div key={r.label} className="flex justify-between border-b border-[--border] pb-1">
                     <span className="text-muted-foreground">{r.label}</span>
@@ -211,15 +333,15 @@ export function TaxSimulator() {
                 <Separator className="my-1 bg-[--border]" />
                 <div className="flex justify-between pt-1">
                   <span className="font-semibold text-foreground">Total tax</span>
-                  <span className="font-bold text-red-600">{fmt(withRRSP.totalTax)}</span>
+                  <span className="font-bold text-red-600">{fmt(withAccounts.totalTax)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold text-foreground">Take-home pay</span>
-                  <span className="font-bold text-emerald-600">{fmt(withRRSP.netIncome)}</span>
+                  <span className="font-bold text-emerald-600">{fmt(withAccounts.netIncome)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Marginal rate (fed + prov)</span>
-                  <span className="text-amber-600">{pct(withRRSP.marginalRate)}</span>
+                  <span className="text-amber-600">{pct(withAccounts.marginalRate)}</span>
                 </div>
               </div>
             </CardContent>
@@ -228,7 +350,7 @@ export function TaxSimulator() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        * Based on 2025 Canadian federal and provincial tax brackets. Estimates only — does not include all credits, surtaxes, or individual circumstances. Not financial advice.
+        * Based on 2025 Canadian federal and provincial tax brackets. Capital gains use the 50% inclusion rate; self-employment income pays both CPP halves; Quebec includes the 16.5% federal abatement. Estimates only — dividends, credits, and surtaxes are not modelled. Not financial advice.
       </p>
     </div>
   )

@@ -56,6 +56,18 @@ export interface AISuggestion {
 }
 
 // Tax types
+export type IncomeSourceType =
+  | "employment"
+  | "selfEmployment"
+  | "capitalGains"
+  | "other"
+
+export interface IncomeSource {
+  id: string
+  type: IncomeSourceType
+  amount: number
+}
+
 export interface TaxResult {
   grossIncome: number
   taxableIncome: number
@@ -67,7 +79,7 @@ export interface TaxResult {
   netIncome: number
   effectiveRate: number
   marginalRate: number
-  rrspSavings: number
+  deductionSavings: number
 }
 
 // Growth projection
