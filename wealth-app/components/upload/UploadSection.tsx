@@ -189,7 +189,7 @@ export function UploadSection() {
               <CardTitle className="flex items-center gap-2 text-base text-forest">
                 <FileText className="h-4 w-4 text-forest" />
                 {loading
-                  ? "Categorising with Claude AI…"
+                  ? "Categorizing with Claude AI…"
                   : `${transactions.length} Transactions`}
               </CardTitle>
               <div className="flex gap-2">

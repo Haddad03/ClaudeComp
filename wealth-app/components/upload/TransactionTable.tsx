@@ -11,6 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { CategoryBadge } from "./CategoryBadge"
 import type { CategorizedTransaction } from "@/lib/types"
+import { formatMoney } from "@/lib/utils"
 
 interface Props {
   transactions: CategorizedTransaction[]
@@ -49,7 +50,7 @@ export function TransactionTable({ transactions, loading }: Props) {
               <TableCell className="text-muted-foreground text-sm font-medium">{tx.date || "—"}</TableCell>
               <TableCell className="max-w-[200px] truncate text-forest text-sm">{tx.description}</TableCell>
               <TableCell className="text-right font-mono text-emerald-600 text-sm font-semibold">
-                ${tx.amount.toFixed(2)}
+                {formatMoney(tx.amount)}
               </TableCell>
               <TableCell>
                 <CategoryBadge category={tx.category} />

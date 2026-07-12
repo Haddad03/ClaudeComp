@@ -1,6 +1,7 @@
 "use client"
 
 import { useAppStore } from "@/store/appStore"
+import { formatMoney } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -142,7 +143,7 @@ export function HomePage() {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Spending</p>
                 <p className="mt-1 text-3xl font-bold text-forest">
-                  ${transactions.reduce((s, t) => s + t.amount, 0).toFixed(2)}
+                  {formatMoney(transactions.reduce((s, t) => s + t.amount, 0))}
                 </p>
               </div>
               <Button

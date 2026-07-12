@@ -9,7 +9,6 @@ import {
   Calculator,
   BookOpen,
   LineChart,
-  Shield,
   History,
   MoreHorizontal,
 } from "lucide-react"
@@ -23,7 +22,6 @@ const tabs = [
   { id: "accounts", label: "Accounts", icon: BookOpen },
   { id: "tax", label: "Tax Sim", icon: Calculator },
   { id: "history", label: "History", icon: History },
-  { id: "terms", label: "Terms", icon: Shield },
 ]
 
 // First 4 tabs shown in mobile bottom bar; rest in "More" sheet

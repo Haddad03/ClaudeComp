@@ -4,6 +4,7 @@ import { useAppStore } from "@/store/appStore"
 import { Card, CardContent } from "@/components/ui/card"
 import type { CategorizedTransaction, CategorySummary } from "@/lib/types"
 import { DollarSign, TrendingUp, Activity, Zap } from "lucide-react"
+import { formatMoney } from "@/lib/utils"
 
 const EXCLUDED_FROM_SPENDING = new Set(["Card Payment", "Transfers", "Investments"])
 
@@ -40,19 +41,19 @@ export function OverviewCards() {
   const stats = [
     {
       label: "Total Spending",
-      value: `$${grandTotal.toFixed(2)}`,
+      value: formatMoney(grandTotal),
       sub: `${transactions.length} transactions`,
       icon: DollarSign,
     },
     {
       label: "Largest Category",
       value: topCategory?.category ?? "—",
-      sub: topCategory ? `$${topCategory.total.toFixed(2)}` : "",
+      sub: topCategory ? formatMoney(topCategory.total) : "",
       icon: TrendingUp,
     },
     {
       label: "Avg per Transaction",
-      value: `$${avgPerTx.toFixed(2)}`,
+      value: formatMoney(avgPerTx),
       sub: "per purchase",
       icon: Zap,
     },

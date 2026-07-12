@@ -173,7 +173,7 @@ export function LandingPage() {
         </h1>
 
         <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed">
-          WealthWise uses AI to analyse your spending, simulate your taxes, and
+          WealthWise uses AI to analyze your spending, simulate your taxes, and
           show you exactly how to grow your money — built for Canadians who
           aren&apos;t millionaires yet.
         </p>

@@ -26,11 +26,12 @@ import {
 import { Trash2, Save, CalendarDays, BarChart2, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { CATEGORY_COLORS } from "@/lib/categories"
 import type { TransactionCategory } from "@/lib/types"
+import { formatMoney } from "@/lib/utils"
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 function fmt(n: number) {
-  return `$${n.toFixed(2)}`
+  return formatMoney(n)
 }
 
 export function HistoryPage() {
@@ -126,7 +127,7 @@ export function HistoryPage() {
                 <Save className="h-4 w-4" />
                 {saved ? "Saved!" : "Save Snapshot"}
               </Button>
-              <p className="text-sm text-muted-foreground">{transactions.length} transactions · ${transactions.reduce((s, t) => s + t.amount, 0).toFixed(2)} total</p>
+              <p className="text-sm text-muted-foreground">{transactions.length} transactions · {formatMoney(transactions.reduce((s, t) => s + t.amount, 0))} total</p>
             </div>
           )}
         </CardContent>

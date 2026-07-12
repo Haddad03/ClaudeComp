@@ -30,7 +30,7 @@ export function DashboardShell() {
           </h1>
           <p className="mt-3 max-w-md text-muted-foreground">
             Upload a bank statement to get AI-powered spending insights, tax
-            tips, and a personalised savings plan — no $1M required.
+            tips, and a personalized savings plan — no $1M required.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export function DashboardShell() {
           Your Financial Dashboard
         </h1>
         <p className="text-sm sm:text-lg text-muted-foreground">
-          {transactions.length} transactions analysed • AI-powered insights
+          {transactions.length} transactions analyzed • AI-powered insights
         </p>
       </div>
       <OverviewCards />

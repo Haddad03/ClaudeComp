@@ -15,7 +15,7 @@ export function AISuggestionsPanel() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function analyse() {
+  async function analyze() {
     setLoading(true)
     setError(null)
 
@@ -57,11 +57,11 @@ export function AISuggestionsPanel() {
           {transactions.length > 0 && (
             <Button
               size="sm"
-              onClick={analyse}
+              onClick={analyze}
               disabled={loading}
               className="bg-lime text-forest hover:bg-lime-dark text-xs font-semibold shadow-sm"
             >
-              {loading ? "Analysing…" : "Analyse"}
+              {loading ? "Analyzing…" : "Analyze"}
             </Button>
           )}
         </div>
@@ -86,7 +86,7 @@ export function AISuggestionsPanel() {
         {!loading && suggestions.length === 0 && !error && (
           <div className="py-8 text-center">
             <p className="text-sm text-muted-foreground">
-              💡 Click &ldquo;Analyse&rdquo; to get personalized savings recommendations
+              💡 Click &ldquo;Analyze&rdquo; to get personalized savings recommendations
             </p>
           </div>
         )}
