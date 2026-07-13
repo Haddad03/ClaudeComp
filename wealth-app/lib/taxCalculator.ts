@@ -131,6 +131,35 @@ export const TFSA_ANNUAL_LIMIT = 7000
 export const RRSP_ANNUAL_MAX = 32490
 export const RRSP_EARNED_INCOME_RATE = 0.18
 
+// The year the app's tax data reflects — TFSA room accrues through here.
+export const CURRENT_TAX_YEAR = 2026
+
+// TFSA annual dollar limit by year since the program began in 2009.
+const TFSA_ANNUAL_LIMITS: Record<number, number> = {
+  2009: 5000, 2010: 5000, 2011: 5000, 2012: 5000,
+  2013: 5500, 2014: 5500,
+  2015: 10000,
+  2016: 5500, 2017: 5500, 2018: 5500,
+  2019: 6000, 2020: 6000, 2021: 6000, 2022: 6000,
+  2023: 6500,
+  2024: 7000, 2025: 7000, 2026: 7000,
+}
+
+// Estimated cumulative TFSA room: you accrue each year's limit from the year
+// you turned 18 (or 2009, whichever is later) through the current year.
+// Approximate — based on age alone, assumes Canadian residency throughout and
+// no prior contributions or withdrawals.
+export function tfsaRoomForAge(age: number, currentYear = CURRENT_TAX_YEAR): number {
+  if (age < 18) return 0
+  const turned18Year = currentYear - (age - 18)
+  const startYear = Math.max(2009, turned18Year)
+  let room = 0
+  for (let y = startYear; y <= currentYear; y++) {
+    room += TFSA_ANNUAL_LIMITS[y] ?? TFSA_ANNUAL_LIMIT
+  }
+  return room
+}
+
 // CPP: 5.95% employee (11.9% self-employed) on pensionable earnings
 // between the $3,500 exemption and the $68,500 ceiling
 const CPP_EXEMPTION = 3500

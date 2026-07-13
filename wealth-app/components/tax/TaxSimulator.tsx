@@ -31,7 +31,9 @@ import {
   TFSA_ANNUAL_LIMIT,
   RRSP_ANNUAL_MAX,
   RRSP_EARNED_INCOME_RATE,
+  tfsaRoomForAge,
 } from "@/lib/taxCalculator"
+import { useAppStore } from "@/store/appStore"
 import type { IncomeSource, IncomeSourceType } from "@/lib/types"
 import { Info, Plus, Trash2 } from "lucide-react"
 
@@ -82,6 +84,10 @@ export function TaxSimulator() {
   const [fhsaMode, setFhsaMode] = useState<EntryMode>("dollar")
   const [tfsa, setTfsa] = useState(0)
 
+  // Age lives in the shared profile so other tools can reuse it.
+  const age = useAppStore((s) => s.age)
+  const setAge = useAppStore((s) => s.setAge)
+
   const earnedIncome = sources
     .filter((s) => s.type === "employment" || s.type === "selfEmployment")
     .reduce((sum, s) => sum + Math.max(0, s.amount), 0)
@@ -92,10 +98,18 @@ export function TaxSimulator() {
   const fhsaDollars = Math.round(fhsaMode === "percent" ? (earnedIncome * fhsa) / 100 : fhsa)
   const fhsaApplied = Math.min(fhsaDollars, FHSA_ANNUAL_LIMIT)
 
-  const withAccounts = calculateTaxFromSources(sources, province, { rrsp: rrspDollars, fhsa: fhsaApplied })
+  // You can't deduct more than your RRSP room — cap what actually reduces tax.
+  const rrspApplied = Math.min(rrspDollars, rrspRoom)
+  const rrspOverRoom = rrspDollars > rrspRoom
+
+  // TFSA room depends on age; fall back to the annual limit until age is known.
+  const tfsaRoom = age != null ? tfsaRoomForAge(age) : TFSA_ANNUAL_LIMIT
+  const tfsaOverRoom = tfsa > tfsaRoom
+
+  const withAccounts = calculateTaxFromSources(sources, province, { rrsp: rrspApplied, fhsa: fhsaApplied })
   const withoutAccounts = calculateTaxFromSources(sources, province)
 
-  const hasDeductions = rrspDollars + fhsaApplied > 0
+  const hasDeductions = rrspApplied + fhsaApplied > 0
   const totalIncome = withAccounts.grossIncome
 
   function updateSource(id: string, patch: Partial<IncomeSource>) {
@@ -242,6 +256,24 @@ export function TaxSimulator() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
+                <Label className="text-muted-foreground">Your age</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={120}
+                  value={age ?? ""}
+                  onChange={(e) =>
+                    setAge(e.target.value === "" ? null : Math.max(0, Math.min(120, Number(e.target.value))))
+                  }
+                  className="border-[--border] bg-[--secondary] text-foreground"
+                  placeholder="e.g. 25"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Used to estimate your total TFSA room. Saved to your profile.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-muted-foreground">RRSP contribution</Label>
                   <ModeToggle mode={rrspMode} onChange={(m) => { setRrspMode(m); setRrsp(0) }} />
@@ -252,6 +284,9 @@ export function TaxSimulator() {
                     <span className="font-medium text-forest">= {fmt(rrspDollars)} · </span>
                   )}
                   Your room this year: ~{fmt(rrspRoom)} (18% of earned income)
+                  {rrspOverRoom && (
+                    <span className="text-amber-600"> · capped at {fmt(rrspRoom)} — the rest isn&apos;t deductible</span>
+                  )}
                 </p>
               </div>
 
@@ -276,8 +311,18 @@ export function TaxSimulator() {
                 <Label className="text-muted-foreground">TFSA contribution</Label>
                 {numberInput(tfsa, setTfsa)}
                 <p className="text-xs text-muted-foreground">
-                  Annual limit {fmt(TFSA_ANNUAL_LIMIT)}{" — "}TFSA contributions don&apos;t reduce
-                  your taxes today, but all growth and withdrawals are tax-free.
+                  {age != null ? (
+                    <>
+                      Your estimated room at age {age}: ~{fmt(tfsaRoom)}
+                      {tfsaOverRoom && (
+                        <span className="text-amber-600"> · over your room</span>
+                      )}
+                    </>
+                  ) : (
+                    <>Annual limit {fmt(TFSA_ANNUAL_LIMIT)} — add your age above for your total room</>
+                  )}
+                  {" — "}TFSA contributions don&apos;t reduce your taxes today, but all growth and
+                  withdrawals are tax-free.
                 </p>
               </div>
 
@@ -354,7 +399,7 @@ export function TaxSimulator() {
               <div className="space-y-2 text-sm">
                 {[
                   { label: "Gross income", value: fmt(totalIncome) },
-                  { label: "RRSP deduction", value: rrspDollars > 0 ? `-${fmt(rrspDollars)}` : "—", highlight: rrspDollars > 0 },
+                  { label: "RRSP deduction", value: rrspApplied > 0 ? `-${fmt(rrspApplied)}` : "—", highlight: rrspApplied > 0 },
                   { label: "FHSA deduction", value: fhsaApplied > 0 ? `-${fmt(fhsaApplied)}` : "—", highlight: fhsaApplied > 0 },
                   { label: "Taxable income", value: fmt(withAccounts.taxableIncome), bold: true },
                 ].map((r) => (

@@ -22,6 +22,8 @@ interface AppStore {
   snapshots: MonthlySnapshot[]
   netWorth: NetWorthState
   setNetWorth: (n: NetWorthState) => void
+  age: number | null
+  setAge: (n: number | null) => void
   setTransactions: (t: CategorizedTransaction[]) => void
   setSuggestions: (s: AISuggestion[]) => void
   setTaxResult: (r: TaxResult) => void
@@ -49,6 +51,8 @@ export const useAppStore = create<AppStore>()(
       snapshots: [],
       netWorth: { assets: [], liabilities: [] },
       setNetWorth: (netWorth) => set({ netWorth }),
+      age: null,
+      setAge: (age) => set({ age }),
       setTransactions: (transactions) => set({ transactions }),
       setSuggestions: (suggestions) => set({ suggestions }),
       setTaxResult: (taxResult) => set({ taxResult }),
@@ -94,6 +98,7 @@ export const useAppStore = create<AppStore>()(
         termsAccepted: state.termsAccepted,
         snapshots: state.snapshots,
         netWorth: state.netWorth,
+        age: state.age,
       }),
     }
   )
