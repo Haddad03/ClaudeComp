@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts"
 import { generateProjectionData, formatCAD } from "@/lib/growthProjection"
-import { Info, Settings, TrendingUp, CheckCircle2, ArrowDown } from "lucide-react"
+import { Info, Settings, TrendingUp, CheckCircle2, ArrowDown, ExternalLink } from "lucide-react"
 
 const compoundData = generateProjectionData(500, 0.07, 20, 0)
 const taxableData = generateProjectionData(500, 0.07 * 0.73, 20, 0)
@@ -60,6 +60,7 @@ const accounts = [
     ],
     rules: ["Available to all Canadian residents 18+", "Unused room carries forward forever", "Withdrawals re-add contribution room next January", "No impact on government benefits like GIS"],
     exampleResult: { account: "$260,000", taxable: "$210,000", diff: "$50,000" },
+    craUrl: "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account.html",
   },
   {
     id: "rrsp",
@@ -81,6 +82,7 @@ const accounts = [
     ],
     rules: ["Deadline: 60 days into the new year for prior-year deduction", "Unused room carries forward indefinitely", "Must convert to RRIF at age 71", "RRSP refund can be re-invested in TFSA for double benefit"],
     exampleResult: { account: "$260,000", taxable: "$210,000", diff: "$50,000" },
+    craUrl: "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/registered-retirement-savings-plan-rrsp.html",
   },
   {
     id: "fhsa",
@@ -102,6 +104,7 @@ const accounts = [
     ],
     rules: ["Must be a first-time home buyer (no home owned in current + prior 4 years)", "Account must be open for at least 1 calendar year before withdrawing", "Unused annual room ($8K) can carry forward one year only", "Can combine with RRSP Home Buyers' Plan for up to $75,000 total"],
     exampleResult: { account: "$260,000", taxable: "$210,000", diff: "$50,000" },
+    craUrl: "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/first-home-savings-account.html",
   },
 ]
 
@@ -274,6 +277,20 @@ export function AccountsExplainer() {
                   </div>
                 </div>
               </div>
+
+              {/* Official CRA source */}
+              <p className="text-sm text-muted-foreground">
+                Verify limits and rules on the official CRA page:{" "}
+                <a
+                  href={a.craUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1 font-medium underline underline-offset-4 ${a.accentText}`}
+                >
+                  {a.title} — Canada Revenue Agency
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </p>
             </TabsContent>
           ))}
         </Tabs>
