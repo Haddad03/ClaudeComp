@@ -114,10 +114,14 @@ export interface CategorySummary {
 }
 
 // Net worth
+export type AssetCategory = "cash" | "investment" | "property" | "other"
+
 export interface NetWorthItem {
   id: string
   label: string
   amount: number
+  // Assets only — lets other tools (e.g. Growth) read just the investments.
+  category?: AssetCategory
 }
 
 export interface NetWorthState {

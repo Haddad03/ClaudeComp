@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useAppStore } from "@/store/appStore"
 import {
-  Home,
+  LayoutDashboard,
   TrendingUp,
   Upload,
   Calculator,
@@ -16,18 +16,17 @@ import {
 import { useState } from "react"
 
 const tabs = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "dashboard", label: "Dashboard", icon: TrendingUp },
+  { id: "home", label: "Overview", icon: LayoutDashboard },
   { id: "upload", label: "Upload", icon: Upload },
+  { id: "networth", label: "Net Worth", icon: Scale },
   { id: "growth", label: "Growth", icon: LineChart },
   { id: "accounts", label: "Accounts", icon: BookOpen },
   { id: "tax", label: "Tax Sim", icon: Calculator },
-  { id: "networth", label: "Net Worth", icon: Scale },
   { id: "history", label: "History", icon: History },
 ]
 
 // First 4 tabs shown in mobile bottom bar; rest in "More" sheet
-const MOBILE_PRIMARY = ["home", "dashboard", "upload", "growth"]
+const MOBILE_PRIMARY = ["home", "upload", "networth", "growth"]
 
 export function Navbar() {
   const { activeTab, setActiveTab, hasOnboarded } = useAppStore()

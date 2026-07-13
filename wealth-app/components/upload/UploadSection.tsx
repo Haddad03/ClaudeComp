@@ -204,10 +204,10 @@ export function UploadSection() {
                   <>
                     <Button
                       size="sm"
-                      onClick={() => setActiveTab("dashboard")}
+                      onClick={() => setActiveTab("home")}
                       className="bg-lime text-forest hover:bg-lime-dark text-xs font-semibold"
                     >
-                      View Dashboard
+                      View Overview
                     </Button>
                     <Button
                       size="sm"

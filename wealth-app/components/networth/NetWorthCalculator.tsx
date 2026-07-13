@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
 import { Plus, Trash2, TrendingUp, TrendingDown, Wallet } from "lucide-react"
 import type { NetWorthItem } from "@/lib/types"
+import { ASSET_CATEGORIES } from "@/lib/netWorth"
 
 function fmt(n: number) {
   const abs = Math.abs(Math.round(n)).toLocaleString("en-CA")
@@ -20,9 +21,9 @@ function newId(prefix: string) {
 }
 
 const DEFAULT_ASSETS: NetWorthItem[] = [
-  { id: "a-cheq", label: "Chequing / Savings", amount: 4000 },
-  { id: "a-tfsa", label: "TFSA", amount: 8000 },
-  { id: "a-rrsp", label: "RRSP", amount: 3000 },
+  { id: "a-cheq", label: "Chequing / Savings", amount: 4000, category: "cash" },
+  { id: "a-tfsa", label: "TFSA", amount: 8000, category: "investment" },
+  { id: "a-rrsp", label: "RRSP", amount: 3000, category: "investment" },
 ]
 
 const DEFAULT_LIABILITIES: NetWorthItem[] = [
@@ -75,9 +76,13 @@ export function NetWorthCalculator() {
   function addRow(
     list: NetWorthItem[],
     setList: (v: NetWorthItem[]) => void,
-    prefix: string
+    prefix: string,
+    withCategory: boolean
   ) {
-    setList([...list, { id: newId(prefix), label: "", amount: 0 }])
+    setList([
+      ...list,
+      { id: newId(prefix), label: "", amount: 0, ...(withCategory ? { category: "cash" as const } : {}) },
+    ])
   }
 
   function removeRow(
@@ -92,18 +97,37 @@ export function NetWorthCalculator() {
     list: NetWorthItem[],
     setList: (v: NetWorthItem[]) => void,
     prefix: string,
-    placeholder: string
+    placeholder: string,
+    withCategory: boolean
   ) => (
     <div className="space-y-2">
       {list.map((row) => (
-        <div key={row.id} className="flex items-center gap-2">
+        <div key={row.id} className="flex flex-wrap items-center gap-2">
           <Input
             value={row.label}
             onChange={(e) => updateRow(list, setList, row.id, { label: e.target.value })}
             placeholder={placeholder}
-            className="flex-1 border-[--border] bg-[--secondary] text-foreground"
+            className="min-w-[8rem] flex-1 border-[--border] bg-[--secondary] text-foreground"
           />
-          <div className="relative w-32">
+          {withCategory && (
+            <select
+              value={row.category ?? "cash"}
+              onChange={(e) =>
+                updateRow(list, setList, row.id, {
+                  category: e.target.value as NetWorthItem["category"],
+                })
+              }
+              aria-label="Asset type"
+              className="h-9 rounded-md border border-[--border] bg-[--secondary] px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
+              {ASSET_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="relative w-28">
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
               $
             </span>
@@ -132,7 +156,7 @@ export function NetWorthCalculator() {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => addRow(list, setList, prefix)}
+        onClick={() => addRow(list, setList, prefix, withCategory)}
         className="gap-1.5 border-dashed border-[--border] bg-transparent text-muted-foreground hover:text-forest"
       >
         <Plus className="h-3.5 w-3.5" />
@@ -161,11 +185,14 @@ export function NetWorthCalculator() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {renderRows(assets, setAssets, "a", "e.g. Car, TFSA, Property")}
+              {renderRows(assets, setAssets, "a", "e.g. Car, TFSA, Property", true)}
               <div className="mt-4 flex items-center justify-between border-t border-[--border] pt-3">
                 <span className="text-sm font-medium text-muted-foreground">Total assets</span>
                 <span className="font-mono text-lg font-bold text-emerald-700">{fmt(totalAssets)}</span>
               </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Rows tagged <span className="font-medium text-forest">Investment</span> flow into your Growth projection.
+              </p>
             </CardContent>
           </Card>
 
@@ -177,7 +204,7 @@ export function NetWorthCalculator() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {renderRows(liabilities, setLiabilities, "l", "e.g. Credit card, Student loan")}
+              {renderRows(liabilities, setLiabilities, "l", "e.g. Credit card, Student loan", false)}
               <div className="mt-4 flex items-center justify-between border-t border-[--border] pt-3">
                 <span className="text-sm font-medium text-muted-foreground">Total liabilities</span>
                 <span className="font-mono text-lg font-bold text-red-700">{fmt(totalLiabilities)}</span>

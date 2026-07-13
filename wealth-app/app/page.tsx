@@ -1,8 +1,7 @@
 "use client"
 
 import { useAppStore } from "@/store/appStore"
-import { HomePage } from "@/components/home/HomePage"
-import { DashboardShell } from "@/components/dashboard/DashboardShell"
+import { OverviewPage } from "@/components/overview/OverviewPage"
 import { UploadSection } from "@/components/upload/UploadSection"
 import { GrowthProjectionSection } from "@/components/growth/GrowthProjectionSection"
 import { AccountsExplainer } from "@/components/accounts/AccountsExplainer"
@@ -23,8 +22,7 @@ export default function Home() {
   return (
     <main className="min-h-[80vh] py-8 md:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {activeTab === "home" && <HomePage />}
-        {activeTab === "dashboard" && <DashboardShell />}
+        {(activeTab === "home" || activeTab === "dashboard") && <OverviewPage />}
         {activeTab === "upload" && <UploadSection />}
         {activeTab === "growth" && <GrowthProjectionSection />}
         {activeTab === "accounts" && <AccountsExplainer />}

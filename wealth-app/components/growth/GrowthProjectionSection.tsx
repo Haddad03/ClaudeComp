@@ -27,6 +27,9 @@ import {
   generateProjectionData,
   formatCAD,
 } from "@/lib/growthProjection"
+import { useAppStore } from "@/store/appStore"
+import { investmentTotal } from "@/lib/netWorth"
+import { Link2, Check } from "lucide-react"
 
 const MILESTONES = [10000, 50000, 100000, 500000, 1000000]
 
@@ -41,11 +44,16 @@ const RATE_PRESETS = [
 const ACCOUNT_TYPES = ["TFSA", "RRSP", "FHSA", "Taxable"]
 
 export function GrowthProjectionSection() {
+  const netWorth = useAppStore((s) => s.netWorth)
+  const investFromNetWorth = investmentTotal(netWorth)
+
   const [monthly, setMonthly] = useState(300)
   const [years, setYears] = useState(20)
   const [ratePct, setRatePct] = useState(7)
   const [currentSavings, setCurrentSavings] = useState(0)
   const [accountType, setAccountType] = useState("TFSA")
+
+  const syncedWithNetWorth = investFromNetWorth > 0 && currentSavings === investFromNetWorth
 
   const rate = ratePct / 100
   const data = generateProjectionData(monthly, rate, years, currentSavings)
@@ -90,6 +98,22 @@ export function GrowthProjectionSection() {
                 />
               </div>
               <div className="flex justify-between text-xs text-muted-foreground"><span>$0</span><span>$50K (type for more)</span></div>
+              {investFromNetWorth > 0 && (
+                syncedWithNetWorth ? (
+                  <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                    <Check className="h-3.5 w-3.5" />
+                    Using your {formatCAD(investFromNetWorth)} in investments from Net Worth
+                  </p>
+                ) : (
+                  <button
+                    onClick={() => setCurrentSavings(investFromNetWorth)}
+                    className="flex items-center gap-1.5 rounded-lg border border-forest/20 bg-forest/5 px-2.5 py-1 text-xs font-medium text-forest transition-colors hover:bg-forest/10"
+                  >
+                    <Link2 className="h-3.5 w-3.5" />
+                    Use my ${investFromNetWorth.toLocaleString()} in investments from Net Worth
+                  </button>
+                )
+              )}
             </div>
 
             <div className="space-y-2">
