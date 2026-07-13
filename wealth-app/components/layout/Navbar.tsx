@@ -10,6 +10,7 @@ import {
   BookOpen,
   LineChart,
   History,
+  Scale,
   MoreHorizontal,
 } from "lucide-react"
 import { useState } from "react"
@@ -21,6 +22,7 @@ const tabs = [
   { id: "growth", label: "Growth", icon: LineChart },
   { id: "accounts", label: "Accounts", icon: BookOpen },
   { id: "tax", label: "Tax Sim", icon: Calculator },
+  { id: "networth", label: "Net Worth", icon: Scale },
   { id: "history", label: "History", icon: History },
 ]
 

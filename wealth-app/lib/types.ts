@@ -112,3 +112,15 @@ export interface CategorySummary {
   count: number
   percentage: number
 }
+
+// Net worth
+export interface NetWorthItem {
+  id: string
+  label: string
+  amount: number
+}
+
+export interface NetWorthState {
+  assets: NetWorthItem[]
+  liabilities: NetWorthItem[]
+}

@@ -7,6 +7,7 @@ import type {
   AISuggestion,
   TaxResult,
   MonthlySnapshot,
+  NetWorthState,
 } from "@/lib/types"
 
 interface AppStore {
@@ -19,6 +20,8 @@ interface AppStore {
   termsAccepted: boolean
   chatOpen: boolean
   snapshots: MonthlySnapshot[]
+  netWorth: NetWorthState
+  setNetWorth: (n: NetWorthState) => void
   setTransactions: (t: CategorizedTransaction[]) => void
   setSuggestions: (s: AISuggestion[]) => void
   setTaxResult: (r: TaxResult) => void
@@ -44,6 +47,8 @@ export const useAppStore = create<AppStore>()(
       termsAccepted: false,
       chatOpen: false,
       snapshots: [],
+      netWorth: { assets: [], liabilities: [] },
+      setNetWorth: (netWorth) => set({ netWorth }),
       setTransactions: (transactions) => set({ transactions }),
       setSuggestions: (suggestions) => set({ suggestions }),
       setTaxResult: (taxResult) => set({ taxResult }),
@@ -88,6 +93,7 @@ export const useAppStore = create<AppStore>()(
         userGoal: state.userGoal,
         termsAccepted: state.termsAccepted,
         snapshots: state.snapshots,
+        netWorth: state.netWorth,
       }),
     }
   )

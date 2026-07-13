@@ -7,6 +7,7 @@ import { UploadSection } from "@/components/upload/UploadSection"
 import { GrowthProjectionSection } from "@/components/growth/GrowthProjectionSection"
 import { AccountsExplainer } from "@/components/accounts/AccountsExplainer"
 import { TaxSimulator } from "@/components/tax/TaxSimulator"
+import { NetWorthCalculator } from "@/components/networth/NetWorthCalculator"
 import { TermsPage } from "@/components/layout/TermsPage"
 import { LandingPage } from "@/components/landing/LandingPage"
 import { HistoryPage } from "@/components/history/HistoryPage"
@@ -28,6 +29,7 @@ export default function Home() {
         {activeTab === "growth" && <GrowthProjectionSection />}
         {activeTab === "accounts" && <AccountsExplainer />}
         {activeTab === "tax" && <TaxSimulator />}
+        {activeTab === "networth" && <NetWorthCalculator />}
         {activeTab === "history" && <HistoryPage />}
         {activeTab === "terms" && <TermsPage />}
       </div>
