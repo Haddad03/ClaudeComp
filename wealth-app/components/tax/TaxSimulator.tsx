@@ -42,25 +42,60 @@ function pct(n: number) {
   return `${(n * 100).toFixed(1)}%`
 }
 
+type EntryMode = "dollar" | "percent"
+
+function ModeToggle({
+  mode,
+  onChange,
+}: {
+  mode: EntryMode
+  onChange: (m: EntryMode) => void
+}) {
+  return (
+    <div className="flex overflow-hidden rounded-lg border border-[--border]">
+      {(["dollar", "percent"] as const).map((m) => (
+        <button
+          key={m}
+          onClick={() => onChange(m)}
+          title={m === "dollar" ? "Enter a dollar amount" : "Enter a % of earned income"}
+          className={`px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            mode === m
+              ? "bg-forest text-lime"
+              : "bg-[--secondary] text-muted-foreground hover:text-forest"
+          }`}
+        >
+          {m === "dollar" ? "$" : "%"}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function TaxSimulator() {
   const [sources, setSources] = useState<IncomeSource[]>([
     { id: "src-1", type: "employment", amount: 75000 },
   ])
   const [province, setProvince] = useState("ON")
   const [rrsp, setRrsp] = useState(0)
+  const [rrspMode, setRrspMode] = useState<EntryMode>("dollar")
   const [fhsa, setFhsa] = useState(0)
+  const [fhsaMode, setFhsaMode] = useState<EntryMode>("dollar")
   const [tfsa, setTfsa] = useState(0)
-
-  const fhsaApplied = Math.min(fhsa, FHSA_ANNUAL_LIMIT)
-  const withAccounts = calculateTaxFromSources(sources, province, { rrsp, fhsa: fhsaApplied })
-  const withoutAccounts = calculateTaxFromSources(sources, province)
 
   const earnedIncome = sources
     .filter((s) => s.type === "employment" || s.type === "selfEmployment")
     .reduce((sum, s) => sum + Math.max(0, s.amount), 0)
   const rrspRoom = Math.min(earnedIncome * RRSP_EARNED_INCOME_RATE, RRSP_ANNUAL_MAX)
 
-  const hasDeductions = rrsp + fhsaApplied > 0
+  // In percent mode the number entered is a % of earned income
+  const rrspDollars = Math.round(rrspMode === "percent" ? (earnedIncome * rrsp) / 100 : rrsp)
+  const fhsaDollars = Math.round(fhsaMode === "percent" ? (earnedIncome * fhsa) / 100 : fhsa)
+  const fhsaApplied = Math.min(fhsaDollars, FHSA_ANNUAL_LIMIT)
+
+  const withAccounts = calculateTaxFromSources(sources, province, { rrsp: rrspDollars, fhsa: fhsaApplied })
+  const withoutAccounts = calculateTaxFromSources(sources, province)
+
+  const hasDeductions = rrspDollars + fhsaApplied > 0
   const totalIncome = withAccounts.grossIncome
 
   function updateSource(id: string, patch: Partial<IncomeSource>) {
@@ -207,19 +242,31 @@ export function TaxSimulator() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-muted-foreground">RRSP contribution</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground">RRSP contribution</Label>
+                  <ModeToggle mode={rrspMode} onChange={(m) => { setRrspMode(m); setRrsp(0) }} />
+                </div>
                 {numberInput(rrsp, setRrsp)}
                 <p className="text-xs text-muted-foreground">
+                  {rrspMode === "percent" && rrsp > 0 && (
+                    <span className="font-medium text-forest">= {fmt(rrspDollars)} · </span>
+                  )}
                   Your room this year: ~{fmt(rrspRoom)} (18% of earned income)
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-muted-foreground">FHSA contribution</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-muted-foreground">FHSA contribution</Label>
+                  <ModeToggle mode={fhsaMode} onChange={(m) => { setFhsaMode(m); setFhsa(0) }} />
+                </div>
                 {numberInput(fhsa, setFhsa)}
                 <p className="text-xs text-muted-foreground">
+                  {fhsaMode === "percent" && fhsa > 0 && (
+                    <span className="font-medium text-forest">= {fmt(fhsaDollars)} · </span>
+                  )}
                   First Home Savings Account — annual limit {fmt(FHSA_ANNUAL_LIMIT)}
-                  {fhsa > FHSA_ANNUAL_LIMIT && (
+                  {fhsaDollars > FHSA_ANNUAL_LIMIT && (
                     <span className="text-amber-600"> · capped at {fmt(FHSA_ANNUAL_LIMIT)}</span>
                   )}
                 </p>
@@ -229,7 +276,7 @@ export function TaxSimulator() {
                 <Label className="text-muted-foreground">TFSA contribution</Label>
                 {numberInput(tfsa, setTfsa)}
                 <p className="text-xs text-muted-foreground">
-                  Annual limit {fmt(TFSA_ANNUAL_LIMIT)} — TFSA contributions don&apos;t reduce
+                  Annual limit {fmt(TFSA_ANNUAL_LIMIT)}{" — "}TFSA contributions don&apos;t reduce
                   your taxes today, but all growth and withdrawals are tax-free.
                 </p>
               </div>
@@ -307,7 +354,7 @@ export function TaxSimulator() {
               <div className="space-y-2 text-sm">
                 {[
                   { label: "Gross income", value: fmt(totalIncome) },
-                  { label: "RRSP deduction", value: rrsp > 0 ? `-${fmt(rrsp)}` : "—", highlight: rrsp > 0 },
+                  { label: "RRSP deduction", value: rrspDollars > 0 ? `-${fmt(rrspDollars)}` : "—", highlight: rrspDollars > 0 },
                   { label: "FHSA deduction", value: fhsaApplied > 0 ? `-${fmt(fhsaApplied)}` : "—", highlight: fhsaApplied > 0 },
                   { label: "Taxable income", value: fmt(withAccounts.taxableIncome), bold: true },
                 ].map((r) => (

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -73,17 +74,45 @@ export function GrowthProjectionSection() {
                 Initial investment:{" "}
                 <span className="font-bold text-sky-600">${currentSavings.toLocaleString()}</span>
               </Label>
-              <Slider min={0} max={50000} step={500} value={[currentSavings]} onValueChange={([v]) => setCurrentSavings(v)} />
-              <div className="flex justify-between text-xs text-muted-foreground"><span>$0</span><span>$50K</span></div>
+              <div className="flex items-center gap-3">
+                <Slider
+                  min={0} max={50000} step={500}
+                  value={[Math.min(currentSavings, 50000)]}
+                  onValueChange={([v]) => setCurrentSavings(v)}
+                  className="flex-1"
+                />
+                <Input
+                  type="number" min={0}
+                  value={currentSavings === 0 ? "" : currentSavings}
+                  onChange={(e) => setCurrentSavings(e.target.value === "" ? 0 : Math.max(0, Number(e.target.value)))}
+                  className="w-28 border-[--border] bg-[--secondary] text-foreground"
+                  placeholder="0"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground"><span>$0</span><span>$50K (type for more)</span></div>
             </div>
 
             <div className="space-y-2">
               <Label className="text-muted-foreground">
                 Monthly savings:{" "}
-                <span className="font-bold text-violet-600">${monthly}</span>
+                <span className="font-bold text-violet-600">${monthly.toLocaleString()}</span>
               </Label>
-              <Slider min={50} max={2000} step={50} value={[monthly]} onValueChange={([v]) => setMonthly(v)} />
-              <div className="flex justify-between text-xs text-muted-foreground"><span>$50</span><span>$2,000</span></div>
+              <div className="flex items-center gap-3">
+                <Slider
+                  min={50} max={2000} step={50}
+                  value={[Math.min(Math.max(monthly, 50), 2000)]}
+                  onValueChange={([v]) => setMonthly(v)}
+                  className="flex-1"
+                />
+                <Input
+                  type="number" min={0}
+                  value={monthly === 0 ? "" : monthly}
+                  onChange={(e) => setMonthly(e.target.value === "" ? 0 : Math.max(0, Number(e.target.value)))}
+                  className="w-28 border-[--border] bg-[--secondary] text-foreground"
+                  placeholder="0"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground"><span>$50</span><span>$2,000 (type for more)</span></div>
             </div>
 
             <div className="space-y-2">
@@ -91,8 +120,22 @@ export function GrowthProjectionSection() {
                 Time horizon:{" "}
                 <span className="font-bold text-emerald-600">{years} years</span>
               </Label>
-              <Slider min={1} max={40} step={1} value={[years]} onValueChange={([v]) => setYears(v)} />
-              <div className="flex justify-between text-xs text-muted-foreground"><span>1 yr</span><span>40 yrs</span></div>
+              <div className="flex items-center gap-3">
+                <Slider
+                  min={1} max={40} step={1}
+                  value={[Math.min(Math.max(years, 1), 40)]}
+                  onValueChange={([v]) => setYears(v)}
+                  className="flex-1"
+                />
+                <Input
+                  type="number" min={1} max={60}
+                  value={years === 0 ? "" : years}
+                  onChange={(e) => setYears(e.target.value === "" ? 1 : Math.min(60, Math.max(1, Number(e.target.value))))}
+                  className="w-28 border-[--border] bg-[--secondary] text-foreground"
+                  placeholder="20"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground"><span>1 yr</span><span>40 yrs (type up to 60)</span></div>
             </div>
 
             <div className="space-y-2">
@@ -100,8 +143,22 @@ export function GrowthProjectionSection() {
                 Expected return:{" "}
                 <span className="font-bold text-amber-600">{ratePct}% / year</span>
               </Label>
-              <Slider min={1} max={15} step={0.5} value={[ratePct]} onValueChange={([v]) => setRatePct(v)} />
-              <div className="flex justify-between text-xs text-muted-foreground"><span>1%</span><span>15%</span></div>
+              <div className="flex items-center gap-3">
+                <Slider
+                  min={1} max={15} step={0.5}
+                  value={[Math.min(Math.max(ratePct, 1), 15)]}
+                  onValueChange={([v]) => setRatePct(v)}
+                  className="flex-1"
+                />
+                <Input
+                  type="number" min={0} max={30} step={0.1}
+                  value={ratePct === 0 ? "" : ratePct}
+                  onChange={(e) => setRatePct(e.target.value === "" ? 0 : Math.min(30, Math.max(0, Number(e.target.value))))}
+                  className="w-28 border-[--border] bg-[--secondary] text-foreground"
+                  placeholder="7"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground"><span>1%</span><span>15% (type up to 30%)</span></div>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {RATE_PRESETS.map((p) => (
                   <button
