@@ -15,6 +15,7 @@ function buildSummaries(
   let grandTotal = 0
 
   for (const tx of transactions) {
+    if (tx.type === "credit") continue
     if (!totals[tx.category]) totals[tx.category] = { total: 0, count: 0 }
     totals[tx.category].total += tx.amount
     totals[tx.category].count += 1
@@ -33,7 +34,7 @@ export function OverviewCards() {
   const { transactions } = useAppStore()
   const summaries = buildSummaries(transactions)
   const grandTotal = transactions
-    .filter((t) => !EXCLUDED_FROM_SPENDING.has(t.category))
+    .filter((t) => !EXCLUDED_FROM_SPENDING.has(t.category) && t.type !== "credit")
     .reduce((s, t) => s + t.amount, 0)
   const topCategory = summaries.sort((a, b) => b.total - a.total)[0]
   const avgPerTx = transactions.length ? grandTotal / transactions.length : 0

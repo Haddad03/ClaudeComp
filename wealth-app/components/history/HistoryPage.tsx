@@ -127,7 +127,7 @@ export function HistoryPage() {
                 <Save className="h-4 w-4" />
                 {saved ? "Saved!" : "Save Snapshot"}
               </Button>
-              <p className="text-sm text-muted-foreground">{transactions.length} transactions · {formatMoney(transactions.reduce((s, t) => s + t.amount, 0))} total</p>
+              <p className="text-sm text-muted-foreground">{transactions.length} transactions · {formatMoney(transactions.reduce((s, t) => s + (t.type === "credit" ? 0 : t.amount), 0))} total</p>
             </div>
           )}
         </CardContent>

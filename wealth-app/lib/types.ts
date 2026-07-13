@@ -3,7 +3,10 @@ export interface RawTransaction {
   id: string
   date: string
   description: string
+  // Always positive; `type` says which way the money moved.
   amount: number
+  // Optional so data saved before this field existed still loads; absent = debit.
+  type?: "debit" | "credit"
 }
 
 export type TransactionCategory =

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { TransactionTable } from "./TransactionTable"
-import { parseCSV, generateMockTransactions, categorizeOffline } from "@/lib/parseStatement"
+import { parseCSV, generateMockTransactions, categorizeOffline, ColumnDetectionError } from "@/lib/parseStatement"
 import type { CategorizedTransaction, RawTransaction } from "@/lib/types"
 import { Upload, FileText, Sparkles, Trash2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -72,8 +72,15 @@ export function UploadSection() {
         return
       }
       await processTransactions(raw)
-    } catch {
-      setError("Failed to parse the file. Make sure it's a valid CSV.")
+    } catch (e) {
+      if (e instanceof ColumnDetectionError) {
+        setError(
+          `Couldn't find an amount column in this file. Columns found: ${e.headers.join(", ")}. ` +
+            `Try renaming the money column to "Amount", "Debit" or "Credit" in a spreadsheet app and re-upload.`
+        )
+      } else {
+        setError("Failed to parse the file. Make sure it's a valid CSV.")
+      }
     }
   }
 

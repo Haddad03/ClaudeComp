@@ -26,7 +26,7 @@ export function CategoryPieChart() {
   const EXCLUDED = new Set(["Card Payment", "Transfers", "Investments"])
   const totals: Record<string, number> = {}
   for (const tx of transactions) {
-    if (EXCLUDED.has(tx.category)) continue
+    if (EXCLUDED.has(tx.category) || tx.type === "credit") continue
     totals[tx.category] = (totals[tx.category] ?? 0) + tx.amount
   }
 

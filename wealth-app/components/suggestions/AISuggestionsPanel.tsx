@@ -22,6 +22,7 @@ export function AISuggestionsPanel() {
     const totals: Record<string, number> = {}
     let totalSpend = 0
     for (const tx of transactions) {
+      if (tx.type === "credit") continue
       totals[tx.category] = (totals[tx.category] ?? 0) + tx.amount
       totalSpend += tx.amount
     }

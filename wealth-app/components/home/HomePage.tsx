@@ -143,7 +143,7 @@ export function HomePage() {
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Total Spending</p>
                 <p className="mt-1 text-3xl font-bold text-forest">
-                  {formatMoney(transactions.reduce((s, t) => s + t.amount, 0))}
+                  {formatMoney(transactions.reduce((s, t) => s + (t.type === "credit" ? 0 : t.amount), 0))}
                 </p>
               </div>
               <Button

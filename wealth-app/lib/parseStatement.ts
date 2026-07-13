@@ -9,6 +9,29 @@ function nextId() {
   return `tx-${++txCounter}-${Date.now()}`
 }
 
+// Thrown when we can't figure out which column holds the amounts,
+// so the UI can show the actual headers instead of failing silently.
+export class ColumnDetectionError extends Error {
+  headers: string[]
+  constructor(headers: string[]) {
+    super("Could not detect an amount column in this CSV")
+    this.name = "ColumnDetectionError"
+    this.headers = headers
+  }
+}
+
+// Lowercase, strip accents (é → e) and punctuation so headers like
+// "Trans. Date", "Montant ($)" or "Débit" match their candidates.
+function normalizeHeader(header: string): string {
+  return header
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
 // Detect which column is which regardless of bank CSV format
 function detectColumns(headers: string[]): {
   date: string | null
@@ -17,18 +40,23 @@ function detectColumns(headers: string[]): {
   debit: string | null
   credit: string | null
 } {
-  const h = headers.map((x) => x.toLowerCase().trim())
+  const h = headers.map(normalizeHeader)
 
   const find = (candidates: string[]) =>
     headers[h.findIndex((col) => candidates.some((c) => col.includes(c)))] ??
     null
 
   return {
-    date: find(["date", "transaction date", "trans date", "posted date"]),
-    description: find(["description", "memo", "payee", "details", "transaction"]),
-    amount: find(["amount", "amt"]),
-    debit: find(["debit", "withdrawal", "charge"]),
-    credit: find(["credit", "deposit"]),
+    date: find(["date"]),
+    description: find([
+      "description", "memo", "payee", "details", "transaction",
+      "merchant", "narrative", "particulars",
+      // French bank exports (Desjardins, BNC, Scotiabank QC…)
+      "libelle", "marchand", "beneficiaire",
+    ]),
+    amount: find(["amount", "amt", "montant", "valeur"]),
+    debit: find(["debit", "withdrawal", "charge", "retrait", "sortie"]),
+    credit: find(["credit", "deposit", "depot", "entree"]),
   }
 }
 
@@ -45,24 +73,44 @@ export function parseCSV(file: File): Promise<RawTransaction[]> {
             return
           }
 
-          const cols = detectColumns(Object.keys(rows[0]))
+          const headers = Object.keys(rows[0])
+          const cols = detectColumns(headers)
+          if (!cols.amount && !cols.debit && !cols.credit) {
+            reject(new ColumnDetectionError(headers))
+            return
+          }
+
+          const parseAmount = (raw: string | undefined) => {
+            if (!raw) return null
+            const n = parseFloat(raw.replace(/[$,\s]/g, "").replace(/[()]/g, "-"))
+            return isNaN(n) ? null : n
+          }
+
           const transactions: RawTransaction[] = []
 
           for (const row of rows) {
-            const rawAmount = cols.amount
-              ? row[cols.amount]
-              : cols.debit
-              ? row[cols.debit!]
-              : cols.credit
-              ? row[cols.credit!]
-              : null
+            // Separate debit/credit columns: whichever has a value wins.
+            // Single amount column: negative means money coming back (refund/credit).
+            let amount: number | null = null
+            let type: "debit" | "credit" = "debit"
 
-            if (!rawAmount) continue
+            const debitVal = cols.debit ? parseAmount(row[cols.debit]) : null
+            const creditVal = cols.credit ? parseAmount(row[cols.credit]) : null
 
-            const amount = parseFloat(
-              rawAmount.replace(/[$,\s]/g, "").replace(/[()]/g, "-")
-            )
-            if (isNaN(amount)) continue
+            if (debitVal !== null && debitVal !== 0) {
+              amount = Math.abs(debitVal)
+            } else if (creditVal !== null && creditVal !== 0) {
+              amount = Math.abs(creditVal)
+              type = "credit"
+            } else if (cols.amount) {
+              const n = parseAmount(row[cols.amount])
+              if (n !== null) {
+                amount = Math.abs(n)
+                type = n < 0 ? "credit" : "debit"
+              }
+            }
+
+            if (amount === null || amount === 0) continue
 
             transactions.push({
               id: nextId(),
@@ -70,7 +118,8 @@ export function parseCSV(file: File): Promise<RawTransaction[]> {
               description: cols.description
                 ? row[cols.description]
                 : "Unknown",
-              amount: Math.abs(amount),
+              amount,
+              type,
             })
           }
 
@@ -127,7 +176,7 @@ export function categorizeOffline(raw: import("./types").RawTransaction[]): impo
 
 // Generate mock transactions for demo purposes
 export function generateMockTransactions(): RawTransaction[] {
-  const mockData = [
+  const mockData: Omit<RawTransaction, "id">[] = [
     { description: "METRO GROCERY STORE", amount: 87.43, date: "2024-03-01" },
     { description: "NETFLIX SUBSCRIPTION", amount: 17.99, date: "2024-03-02" },
     { description: "UBER TRIP", amount: 14.5, date: "2024-03-03" },
@@ -148,6 +197,8 @@ export function generateMockTransactions(): RawTransaction[] {
     { description: "UBER EATS ORDER", amount: 44.2, date: "2024-03-17" },
     { description: "SHOPPERS DRUG MART", amount: 38.5, date: "2024-03-18" },
     { description: "STEAM GAME PURCHASE", amount: 29.99, date: "2024-03-19" },
+    { description: "SPORT CHEK REFUND", amount: 89.99, date: "2024-03-20", type: "credit" },
+    { description: "E-TRANSFER FROM ELIAS", amount: 40.0, date: "2024-03-21", type: "credit" },
   ]
 
   return mockData.map((t) => ({ ...t, id: nextId() }))

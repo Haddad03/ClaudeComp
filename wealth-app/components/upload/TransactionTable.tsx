@@ -49,8 +49,17 @@ export function TransactionTable({ transactions, loading }: Props) {
             >
               <TableCell className="text-muted-foreground text-sm font-medium">{tx.date || "—"}</TableCell>
               <TableCell className="max-w-[200px] truncate text-forest text-sm">{tx.description}</TableCell>
-              <TableCell className="text-right font-mono text-emerald-600 text-sm font-semibold">
-                {formatMoney(tx.amount)}
+              <TableCell
+                className={`text-right font-mono text-sm font-semibold ${
+                  tx.type === "credit" ? "text-emerald-600" : "text-forest"
+                }`}
+              >
+                {tx.type === "credit" ? `+${formatMoney(tx.amount)}` : formatMoney(tx.amount)}
+                {tx.type === "credit" && (
+                  <span className="ml-1.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                    credit
+                  </span>
+                )}
               </TableCell>
               <TableCell>
                 <CategoryBadge category={tx.category} />

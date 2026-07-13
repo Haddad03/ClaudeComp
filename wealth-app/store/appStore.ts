@@ -60,6 +60,7 @@ export const useAppStore = create<AppStore>()(
         set((state) => {
           const categoryTotals: Record<string, number> = {}
           for (const tx of state.transactions) {
+            if (tx.type === "credit") continue
             categoryTotals[tx.category] = (categoryTotals[tx.category] ?? 0) + tx.amount
           }
           const totalSpending = Object.values(categoryTotals).reduce((a, b) => a + b, 0)
